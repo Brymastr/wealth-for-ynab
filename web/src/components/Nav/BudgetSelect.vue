@@ -4,37 +4,64 @@
       flex flex-col
       sm:flex-row
       items-stretch
-      justify-end
       divide-y-2
       sm:divide-y-0 sm:divide-x-2
       divide-blue-400
+      w-full
+      mx-auto
+      sm:w-min
     "
   >
     <!-- left side -->
-    <div class="flex flex-col items-end pr-5 mt-2">
-      <div class="text-6xl uppercase leading-none">Budgets</div>
-      <p>Select a budget to analyze</p>
-      <ReloadIcon
-        class="text-3xl -mr-2"
-        id="reload-budgets"
-        :rotate="rotate"
-        :ready="ready"
-        :action="loadBudgets"
-        size="large"
-        >{{ rotate || !ready ? 'Loading...' : 'Refresh' }}</ReloadIcon
-      >
+    <div class="flex sm:flex-col items-end justify-between sm:justify-start sm:pr-3 pb-3 sm:pb-0 px-3">
+      <div class="flex flex-col sm:items-end">
+        <div class="text-5xl sm:text-6xl uppercase leading-none">Budgets</div>
+        <p>Select a budget to analyze</p>
+      </div>
+      <!-- small -->
+      <div class="flex sm:hidden">
+        <ReloadIcon
+          class="text-3xl -mr-1"
+          id="reload-budgets"
+          :rotate="rotate"
+          :ready="ready"
+          :action="loadBudgets"
+          size="large"
+          >{{ rotate || !ready ? 'Loading...' : '' }}</ReloadIcon
+        >
 
-      <ArrowRightCircleIcon
-        v-if="selectedBudgetId !== null"
-        class="text-3xl -mr-2 mb-2"
-        label="Go!"
-        :action="go"
-        size="large"
-      />
+        <ArrowRightCircleIcon
+          v-if="selectedBudgetId !== null"
+          class="text-3xl -mr-1"
+          label=""
+          :action="go"
+          size="large"
+        />
+      </div>
+      <!-- large -->
+      <div class="sm:flex-col sm:items-end hidden sm:flex">
+        <ReloadIcon
+          class="text-3xl -mr-1"
+          id="reload-budgets"
+          :rotate="rotate"
+          :ready="ready"
+          :action="loadBudgets"
+          size="large"
+          >{{ rotate || !ready ? 'Loading...' : 'Refresh' }}</ReloadIcon
+        >
+
+        <ArrowRightCircleIcon
+          v-if="selectedBudgetId !== null"
+          class="text-3xl -mr-1"
+          label="Go!"
+          :action="go"
+          size="large"
+        />
+      </div>
     </div>
 
     <!-- right side -->
-    <div class="pl-1">
+    <div class="pt-3 sm:pt-0 sm:pl-3 sm:w-72">
       <div
         class="cursor-pointer transition duration-100 ease-out hover:bg-gray-900 p-3"
         v-for="budget in sortedBudgets"

@@ -1,5 +1,5 @@
 <template>
-  <div class="parent flex cursor-pointer items-center" @click="action">
+  <div class="icon-parent flex cursor-pointer items-center" @click="action">
     <p class="pr-1"><slot></slot></p>
     <svg
       :id="id"
@@ -35,7 +35,7 @@ interface Props {
   size: string;
   rotate: boolean;
   ready: boolean;
-  action?: Function;
+  action?: any;
 }
 
 export default defineComponent({
@@ -72,8 +72,8 @@ export default defineComponent({
 });
 </script>
 
-<style  lang="postcss">
-.parent:hover .ready {
+<style  lang="postcss" scoped>
+.icon-parent:hover .ready {
   transform: rotate(-90deg);
 }
 

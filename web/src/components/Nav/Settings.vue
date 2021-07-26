@@ -1,34 +1,34 @@
 <template>
-  <div class="flex items-stretch justify-end divide-x-2 divide-blue-400">
+  <div
+    class="
+      flex flex-col
+      sm:flex-row
+      items-stretch
+      justify-end
+      divide-y-2
+      sm:divide-y-0 sm:divide-x-2
+      divide-blue-400
+      w-full
+      mx-auto
+      sm:w-min
+      overflow-x-hidden
+    "
+  >
     <!-- left side -->
-    <div class="flex flex-col items-end pr-5 mt-1">
-      <div class="text-6xl uppercase leading-none">Settings</div>
-      <p>Settings currently only persist until logout</p>
-      <ArrowRightCircleIcon class="text-3xl -mr-2" label="Done" :action="done" size="large" />
+    <div class="flex sm:flex-col items-end justify-between sm:pr-3 pb-3 sm:pb-0 px-3">
+      <div class="flex flex-col sm:items-end">
+        <div class="text-5xl sm:text-6xl uppercase leading-none">Settings</div>
+        <p>Settings persist until logout</p>
+      </div>
+      <ArrowRightCircleIcon class="text-3xl -mr-1" label="Done" :action="done" size="large" />
     </div>
 
     <!-- right side -->
-    <div class="pl-1">
+    <div class="pt-3 sm:pt-0 sm:pl-3 sm:w-64">
       <div>
-        <span class="block text-3xl ml-3 border-b border-blue-400">Misc.</span>
-        <div
-          class="cursor-pointer transition ml-3 duration-100 ease-out hover:bg-gray-900 px-3 py-2 text-lg flex justify-between"
-          @click="setBrynab()"
-        >
-          <p class="mr-5">brynab</p>
-          <p>
-            {{ getBrynab ? 'Enabled' : 'Disabled' }}
-          </p>
-        </div>
-        <div
-          class="cursor-pointer transition ml-3 duration-100 ease-out hover:bg-gray-900 px-3 py-2 text-lg flex justify-between"
-          @click="setDummy()"
-        >
-          <p class="mr-5">dummy data</p>
-          <p>
-            {{ isDummy ? 'Enabled' : 'Disabled' }}
-          </p>
-        </div>
+        <span class="block text-3xl border-b border-blue-400 px-3">Misc.</span>
+        <SettingsItem :action="setBrynab" label="brynab" :enabled="getBrynab" />
+        <SettingsItem :action="setDummy" label="dummy data" :enabled="isDummy" />
       </div>
     </div>
   </div>
@@ -38,18 +38,21 @@
 import ArrowRightCircleIcon from '@/components/Icons/ArrowRightCircleIcon.vue';
 import { defineComponent } from 'vue';
 import useSettings from '@/composables/settings';
+import SettingsItem from '@/components/Nav/SettingsItem.vue';
 
 export default defineComponent({
   name: 'Settings',
-  components: { ArrowRightCircleIcon },
+  components: { ArrowRightCircleIcon, SettingsItem },
   setup(_, { emit }) {
     const { getBrynab, setBrynab, isDummy, setDummy } = useSettings();
 
-    function done() {
-      emit('done');
-    }
-
-    return { done, getBrynab, setBrynab, isDummy, setDummy };
+    return {
+      done: () => emit('done'),
+      getBrynab,
+      setBrynab: setBrynab.bind(null, undefined),
+      setDummy: setDummy.bind(null, undefined),
+      isDummy,
+    };
   },
 });
 </script>

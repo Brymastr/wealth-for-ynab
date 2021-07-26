@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col sm:hidden xl:container mx-auto h-full">
+  <div class="flex flex-col sm:hidden xl:container h-full">
     <!-- top  -->
     <div class="nav-top grid" @click="toggleMobileNav">
       <!-- hamburger -->
