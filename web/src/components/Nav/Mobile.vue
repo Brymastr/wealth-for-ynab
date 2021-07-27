@@ -1,11 +1,9 @@
 <template>
-  <div class="sm:hidden">
+  <div class="sm:hidden flex flex-col h-5/6">
     <!-- top  -->
     <div class="nav-top grid" @click="toggleMobileNav">
       <!-- hamburger -->
-      <div class="justify-start h-header flex">
-        <NavItem class="py-2 h-full w-10 pl-3" :underline="false"><Logo /></NavItem>
-      </div>
+      <NavItem class="py-2 h-full w-10 pl-3" :underline="false"><Logo /></NavItem>
 
       <!-- title -->
       <Title class="h-header" />
@@ -15,6 +13,7 @@
     <div class="justify-center h-header flex links">
       <NavItem @clicked="goToSettings" :selected="settingsSelected">Settings</NavItem>
       <NavItem @clicked="goToBudgets" :selected="budgetsSelected">Budgets</NavItem>
+      <NavItem @clicked="logout">Logout</NavItem>
     </div>
 
     <!-- nav content -->
