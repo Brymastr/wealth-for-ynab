@@ -7,7 +7,7 @@
     <Spinner :on="!ready">Loading YNAB Data...</Spinner>
 
     <!-- utility bar -->
-    <div class="h-header bg-blue-400 text-white" v-if="ready">
+    <div class="h-header bg-blue-400 text-white px-3 xl:px-0" v-if="ready">
       <div class="xl:container mx-auto flex justify-between items-center">
         <DateSelect
           :dates="dateList"
@@ -30,7 +30,7 @@
     <!-- main section -->
     <section class="flex-grow" v-if="ready">
       <!-- graph area -->
-      <div class="bg-gray-300 min-h-540 md:h-screen-1/2">
+      <div class="bg-gray-300 min-h-540 md:h-screen-1/2 px-3">
         <div class="xl:container mx-auto grid grid-cols-3 gap-x-5 h-full">
           <div class="flex flex-col justify-center md:col-span-1 col-span-3 order-2">
             <CurrentNetWorthSummary
@@ -51,7 +51,7 @@
       </div>
 
       <!-- stats area -->
-      <div class="grid grid-cols-12 gap-5 xl:container xl:mx-auto pt-5">
+      <div class="grid grid-cols-12 gap-5 xl:container mx-3 xl:mx-auto pt-5">
         <NetWorthStats class="col-span-12 md:col-span-7" :netWorth="netWorth" />
         <NetWorthTable class="col-span-12 md:col-span-5 row-span-2 max-h-500" :netWorth="netWorth" />
         <MonthlyAverage class="col-span-12 md:col-span-7" :netWorth="netWorth" />

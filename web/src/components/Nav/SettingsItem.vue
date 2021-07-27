@@ -9,9 +9,9 @@
       text-lg
       flex
       justify-between
-      sm:px-5
       leading-10
       px-3
+      sm:px-5
     "
     @click="action"
   >
