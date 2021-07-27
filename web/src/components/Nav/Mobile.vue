@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col sm:hidden xl:container h-full">
+  <div class="sm:hidden">
     <!-- top  -->
     <div class="nav-top grid" @click="toggleMobileNav">
       <!-- hamburger -->
       <div class="justify-start h-header flex">
-        <NavItem :underline="false"><Logo /></NavItem>
+        <NavItem class="py-2 h-full w-10 pl-3" :underline="false"><Logo /></NavItem>
       </div>
 
       <!-- title -->
