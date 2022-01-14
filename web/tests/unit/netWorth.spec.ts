@@ -1,9 +1,8 @@
 import { WorthDate } from '@/composables/types';
-import { getDiffByMonth } from '../../src/composables/netWorth';
+import { getDiffByMonth } from '@/services/helper';
 
 describe('getDiffByMonth', () => {
   test('real, complex example', () => {
-    // prettier-ignore
     const exampleData: WorthDate[] = [
       { date: '2017-05-31', worth: -11600.36 },
       { date: '2017-06-30', worth: -9971.26, previous: { date: '2017-05-31', worth: -11600.36 } },
