@@ -5,4 +5,8 @@ export interface WorthDate {
   index?: number;
 }
 
-export type LoadingStatus = 'loading' | 'complete' | 'ready';
+export enum LoadingStatus {
+  'loading',
+  'complete',
+  'ready',
+}

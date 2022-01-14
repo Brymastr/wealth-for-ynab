@@ -10,11 +10,10 @@
 <script lang="ts">
 import { WorthDate } from '@/composables/types';
 import LineGraph from '@/components/Graphs/LineGraph.vue';
-import { formatCurrency, formatDate } from '../../services/helper';
+import { formatCurrency, formatDate } from '@/services/helper';
 import { ChartData, ChartOptions, ChartDataset, ChartEvent, ActiveElement } from 'chart.js';
-import { BLUE } from '../../colors';
-import { defineComponent } from 'vue';
-import { computed, PropType, ref } from 'vue';
+import { BLUE } from '@/colors';
+import { computed, PropType, ref, defineComponent } from 'vue';
 
 interface Props {
   netWorth: WorthDate[];

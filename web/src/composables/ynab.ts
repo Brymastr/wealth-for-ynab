@@ -1,10 +1,10 @@
 import { computed, reactive, readonly } from 'vue';
 import { BudgetDetail, Account } from 'ynab';
-import { LoadingStatus, WorthDate } from './types';
-import useYnabApi from '../api/ynab';
 import { getUnixTime, isAfter } from 'date-fns';
-import { formatEndOfMonth, isBetween } from '@/services/helper';
 import numeral from 'numeral';
+import { LoadingStatus, WorthDate } from './types';
+import useYnabApi from '@/api/ynab';
+import { formatEndOfMonth, isBetween, createDateList } from '@/services/helper';
 import useComposition from './base';
 const namespace = 'ynab';
 
@@ -47,26 +47,14 @@ const defaultState: State = {
   accountsUpdatedAt: null,
   netWorthUpdatedAt: null,
   forecastUpdatedAt: null,
-  loadingStatus: 'ready',
-  loadingAccountsStatus: 'ready',
-  loadingBudgetsStatus: 'ready',
-  loadingNetWorthStatus: 'ready',
-  loadingForecastStatus: 'ready',
+  loadingStatus: LoadingStatus.ready,
+  loadingAccountsStatus: LoadingStatus.ready,
+  loadingBudgetsStatus: LoadingStatus.ready,
+  loadingNetWorthStatus: LoadingStatus.ready,
+  loadingForecastStatus: LoadingStatus.ready,
 };
 
 const state = reactive(defaultState);
-
-function set() {
-  persist(namespace, {
-    budgets: state.budgets,
-    selectedBudgetId: state.selectedBudgetId,
-    selectedBudgetName: state.selectedBudgetName,
-    budgetsUpdatedAt: state.budgetsUpdatedAt,
-    accountsUpdatedAt: state.accountsUpdatedAt,
-    netWorthUpdatedAt: state.netWorthUpdatedAt,
-    forecastUpdatedAt: state.forecastUpdatedAt,
-  });
-}
 
 function getBudgetById(budgetId?: string) {
   const id = budgetId ?? state.selectedBudgetId;
@@ -102,16 +90,16 @@ const getFilteredDateRange = (data: WorthDate[]) => {
   return data.filter(({ date }) => isBetween(new Date(date), new Date(start), new Date(end)));
 };
 
-function setLoadingBudgets(status: LoadingStatus) {
+function setLoadingBudgets(status: LoadingStatus = LoadingStatus.loading) {
   state.loadingBudgetsStatus = status;
 }
-function setLoadingAccounts(status: LoadingStatus) {
+function setLoadingAccounts(status: LoadingStatus = LoadingStatus.loading) {
   state.loadingAccountsStatus = status;
 }
 // function setLoadingForecast(status: LoadingStatus) {
 //   state.loadingForecastStatus = status;
 // }
-function setLoadingNetWorth(status: LoadingStatus) {
+function setLoadingNetWorth(status: LoadingStatus = LoadingStatus.loading) {
   state.loadingNetWorthStatus = status;
 }
 function setBudgetsUpdatedAt(date: number | null) {
@@ -149,11 +137,6 @@ function setNetWorthUpdatedAt(date: number) {
 //   set();
 // }
 
-function createDateList(input: WorthDate[]) {
-  const dateList = input.map(({ date }) => formatEndOfMonth(date)) ?? [];
-  return dateList;
-}
-
 function createOrUpdateBudget(input: Budget) {
   const index = state.budgets.findIndex(x => x.id === input.id);
 
@@ -187,7 +170,7 @@ function createOrUpdateAccounts(payload: AccountsPayload) {
 }
 
 async function loadAccounts() {
-  setLoadingAccounts('loading');
+  setLoadingAccounts(LoadingStatus.loading);
 
   const budgetId = state.selectedBudgetId;
 
@@ -199,15 +182,15 @@ async function loadAccounts() {
 
   createOrUpdateAccounts(accountsPayload);
 
-  setLoadingAccounts('complete');
+  setLoadingAccounts(LoadingStatus.complete);
 
   setAccountsUpdatedAt(getUnixTime(Date.now()));
 
-  setTimeout(() => setLoadingAccounts('ready'), 2000);
+  setTimeout(() => setLoadingAccounts(LoadingStatus.ready), 2000);
 }
 
 async function loadNetWorth() {
-  setLoadingNetWorth('loading');
+  setLoadingNetWorth(LoadingStatus.loading);
 
   const budgetId = state.selectedBudgetId;
 
@@ -226,22 +209,21 @@ async function loadNetWorth() {
 
   const updatedBudget = Object.assign({}, budget, {
     monthlyNetWorth,
-    selectedStartDate:
-      budget.selectedStartDate ?? formatEndOfMonth(selectedStartDate.toISOString()),
+    selectedStartDate: budget.selectedStartDate ?? formatEndOfMonth(selectedStartDate.toISOString()),
     selectedEndDate: budget.selectedEndDate ?? formatEndOfMonth(selectedEndDate.toISOString()),
   });
 
   createOrUpdateBudget(updatedBudget);
 
-  setLoadingNetWorth('complete');
+  setLoadingNetWorth(LoadingStatus.complete);
 
   setNetWorthUpdatedAt(getUnixTime(Date.now()));
 
-  setTimeout(() => setLoadingNetWorth('ready'), 2000);
+  setTimeout(() => setLoadingNetWorth(LoadingStatus.ready), 2000);
 }
 
 // async function loadForecast() {
-//   setLoadingAccounts('loading');
+//   setLoadingAccounts(LoadingStatus.loading);
 
 //   const budgetId = state.selectedBudgetId;
 
@@ -249,15 +231,15 @@ async function loadNetWorth() {
 
 //   const budget = getBudgetById(budgetId);
 //   if (!budget) {
-//     setLoadingForecast('complete');
-//     setTimeout(() => setLoadingForecast('ready'), 2000);
+//     setLoadingForecast(LoadingStatus.complete);
+//     setTimeout(() => setLoadingForecast(LoadingStatus.ready), 2000);
 //     return;
 //   }
 
 //   const netWorth = budget.monthlyNetWorth;
 //   if (netWorth === undefined) {
-//     setLoadingForecast('complete');
-//     setTimeout(() => setLoadingForecast('ready'), 2000);
+//     setLoadingForecast(LoadingStatus.complete);
+//     setTimeout(() => setLoadingForecast(LoadingStatus.ready), 2000);
 //     return;
 //   }
 
@@ -267,16 +249,15 @@ async function loadNetWorth() {
 
 //   createOrUpdateBudget(updatedBudget);
 
-//   setLoadingForecast('complete');
+//   setLoadingForecast(LoadingStatus.complete);
 
 //   setForecastUpdatedAt(getUnixTime(Date.now()));
 
-//   setTimeout(() => setLoadingForecast('ready'), 2000);
+//   setTimeout(() => setLoadingForecast(LoadingStatus.ready), 2000);
 // }
 
 function loadMonthlyData() {
   loadNetWorth();
-  // loadForecast();
 }
 
 function setSelectedBudget(budget: Budget) {
@@ -303,7 +284,7 @@ function clearState() {
 }
 
 async function loadBudgets() {
-  setLoadingBudgets('loading');
+  setLoadingBudgets(LoadingStatus.loading);
   const remoteBudgets = await getBudgets();
 
   for (const remoteBudget of remoteBudgets) {
@@ -316,10 +297,10 @@ async function loadBudgets() {
     }
   }
 
-  setLoadingBudgets('complete');
+  setLoadingBudgets(LoadingStatus.complete);
   setBudgetsUpdatedAt(getUnixTime(Date.now()));
 
-  setTimeout(() => setLoadingBudgets('ready'), 2000);
+  setTimeout(() => setLoadingBudgets(LoadingStatus.ready), 2000);
 }
 
 const sortedBudgets = computed(() => {
@@ -330,6 +311,18 @@ const sortedBudgets = computed(() => {
     return isAfter(aDate, bDate) ? -1 : 1;
   });
 });
+
+function set() {
+  persist(namespace, {
+    budgets: state.budgets,
+    selectedBudgetId: state.selectedBudgetId,
+    selectedBudgetName: state.selectedBudgetName,
+    budgetsUpdatedAt: state.budgetsUpdatedAt,
+    accountsUpdatedAt: state.accountsUpdatedAt,
+    netWorthUpdatedAt: state.netWorthUpdatedAt,
+    forecastUpdatedAt: state.forecastUpdatedAt,
+  });
+}
 
 function reset() {
   const x = getModule<State>(namespace);
@@ -356,6 +349,7 @@ export default function useYnab() {
     getBudgetById,
     loadBudgets,
     loadAccounts,
+    loadNetWorth,
     setBudgetStartDate,
     setBudgetEndDate,
     getFilteredDateRange,

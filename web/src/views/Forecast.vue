@@ -7,6 +7,8 @@
     <Spinner :on="!ready">Loading YNAB Data...</Spinner>
 
     <!-- main section -->
+    {{ ready }}
+    {{ loadingStatus }}
     <section class="flex-grow" v-if="ready">
       <ForecastGraph
         class="col-span-3 md:col-span-2 min-h-540 md:min-h-0 order-1 md:order-2"
@@ -23,9 +25,9 @@
 import { computed, defineComponent, ref, watch } from 'vue';
 import Spinner from '@/components/General/Spinner.vue';
 import ForecastGraph from '@/components/Graphs/Forecast.vue';
+// import { getData as getDummyData } from '@/composables/dummyGraph';
+import { LoadingStatus, WorthDate } from '@/composables/types';
 import useYnab from '@/composables/ynab';
-import { getData as getDummyData } from '@/composables/dummyGraph';
-import { WorthDate } from '@/composables/types';
 import useSettings from '@/composables/settings';
 
 export default defineComponent({
@@ -35,7 +37,7 @@ export default defineComponent({
     ForecastGraph,
   },
   setup() {
-    const { getForecast } = useYnab();
+    const { getForecast, state } = useYnab();
     const { isDummy: isDummyFlag } = useSettings();
 
     const netWorth = ref<WorthDate[] | null>(null);
@@ -46,8 +48,8 @@ export default defineComponent({
     }
 
     function useDummyData() {
-      const data = getDummyData();
-      netWorth.value = data;
+      // const data = getDummyData();
+      // netWorth.value = data;
     }
 
     function reload() {
@@ -62,9 +64,19 @@ export default defineComponent({
     reload();
 
     const ready = computed(() => netWorth.value && netWorth.value.length > 0);
+    const loadingStatus = computed(() => state.loadingNetWorthStatus);
+
+    console.log(netWorth.value);
+    watch(
+      () => loadingStatus.value,
+      () => {
+        if (loadingStatus.value === LoadingStatus.complete) reload();
+      },
+    );
 
     return {
       ready,
+      loadingStatus,
     };
   },
 });

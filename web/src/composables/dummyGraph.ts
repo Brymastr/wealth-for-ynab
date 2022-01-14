@@ -1,45 +1,7 @@
 import { BLUE } from '../colors';
 import { ChartOptions, ChartData, ChartDataset, TooltipItem, ChartTypeRegistry } from 'chart.js';
-import { formatCurrency, formatEndOfMonth } from '../services/helper';
-import { subMonths, addMonths } from 'date-fns';
+import { formatCurrency } from '@/services/helper';
 import { WorthDate } from '@/composables/types';
-
-function randomNumber(minLength = 8, maxLength = 50) {
-  return ~~(Math.random() * (maxLength - minLength + 1) + minLength);
-}
-
-function getRandomDataset(seriesLength: number) {
-  const dataset: number[] = [];
-  const modifier = randomNumber(1, 10);
-
-  const probability = [-1933, -554, 190, 534, 674, 722, 930, 1687, 2329, 3542].map(
-    x => x * modifier,
-  );
-  let currentValue = randomNumber(-50000, 100000);
-
-  for (let i = 0; i < seriesLength; i++) {
-    const random = randomNumber(1, 10);
-
-    currentValue += probability[random - 1];
-
-    dataset.push(currentValue);
-  }
-
-  return dataset;
-}
-
-function getDateRange(seriesLength: number) {
-  const date = subMonths(new Date(), seriesLength);
-
-  const dates: string[] = [];
-
-  for (let i = 0; i <= seriesLength; i++) {
-    const d = formatEndOfMonth(addMonths(date, i).toISOString());
-    dates.push(d);
-  }
-
-  return dates;
-}
 
 export function getOptions(onClick?: () => void) {
   const options: ChartOptions = {
@@ -163,26 +125,4 @@ export function getChartData(values: WorthDate[]) {
   const chartData: ChartData = { labels, datasets };
 
   return chartData;
-}
-
-export function getData() {
-  const seriesLength = randomNumber();
-
-  const dates = getDateRange(seriesLength);
-  const values: number[] = getRandomDataset(seriesLength);
-
-  const result: WorthDate[] = [];
-
-  for (let i = 0; i < seriesLength; i++) {
-    const x: WorthDate = {
-      date: dates[i],
-      worth: values[i],
-    };
-
-    if (i !== 0) x.previous = result[i - 1];
-
-    result.push(x);
-  }
-
-  return result;
 }

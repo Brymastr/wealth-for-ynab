@@ -1,8 +1,10 @@
 import { computed, reactive, readonly } from 'vue';
 import useComposition from './base';
+import useBackend, { BackendType } from './backend';
 const namespace = 'settings';
 
 const { persist, getModule } = useComposition();
+const { setActiveBackend, setActiveBackendToPrevious } = useBackend();
 
 interface State {
   brynab: boolean;
@@ -31,6 +33,8 @@ const isDummy = computed(() => state.dummy);
 
 function setDummy(payload?: boolean) {
   state.dummy = payload ?? !state.dummy;
+  if (payload === true) setActiveBackend(BackendType.dummy);
+  else setActiveBackendToPrevious();
   set();
 }
 

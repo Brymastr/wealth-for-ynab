@@ -18,8 +18,8 @@ import { computed, PropType, ref } from 'vue';
 
 interface Props {
   netWorth: WorthDate[];
-  forecast: WorthDate[];
-  combined: WorthDate[];
+  forecast?: WorthDate[];
+  combined?: WorthDate[];
   changeGraph: boolean;
 }
 
@@ -33,11 +33,11 @@ export default defineComponent({
     },
     forecast: {
       type: Object as PropType<WorthDate[]>,
-      required: true,
+      required: false,
     },
     combined: {
       type: Object as PropType<WorthDate[]>,
-      required: true,
+      required: false,
     },
     changeGraph: {
       type: Boolean,
@@ -93,27 +93,27 @@ export default defineComponent({
       ];
 
       // if time range includes forecast
-      if (props.forecast.length > 0) {
-        actual = props.netWorth.concat([props.forecast[0]]).map(({ worth }) => worth);
+      // if (props.forecast.length > 0) {
+      //   actual = props.netWorth.concat([props.forecast[0]]).map(({ worth }) => worth);
 
-        const forecast = props.netWorth
-          .map(({ date }) => ({ date, worth: NaN }))
-          .concat(props.forecast)
-          .map(({ worth }) => worth);
+      //   const forecast = props.netWorth
+      //     .map(({ date }) => ({ date, worth: NaN }))
+      //     .concat(props.forecast)
+      //     .map(({ worth }) => worth);
 
-        const forecastDataset: ChartDataset = {
-          label: 'Forecast',
-          data: forecast,
-          fill: 'zero',
-          spanGaps: false,
-          pointBackgroundColor: '#2D3848',
-          pointRadius: 2,
-          pointHoverRadius: 5,
-          pointBorderWidth: 0,
-        };
+      //   const forecastDataset: ChartDataset = {
+      //     label: 'Forecast',
+      //     data: forecast,
+      //     fill: 'zero',
+      //     spanGaps: false,
+      //     pointBackgroundColor: '#2D3848',
+      //     pointRadius: 2,
+      //     pointHoverRadius: 5,
+      //     pointBorderWidth: 0,
+      //   };
 
-        datasets.push(forecastDataset);
-      }
+      //   datasets.push(forecastDataset);
+      // }
 
       const chartData: ChartData = { labels, datasets };
 

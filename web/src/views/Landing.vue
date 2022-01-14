@@ -97,7 +97,8 @@ import AverageChange from '@/components/Stats/AverageChange.vue';
 import BestWorst from '@/components/Stats/BestWorst.vue';
 import NetChange from '@/components/Stats/NetChange.vue';
 import PositiveNegative from '@/components/Stats/PositiveNegative.vue';
-import { getOptions, getData, getChartData } from '../composables/dummyGraph';
+import { getOptions, getChartData } from '@/composables/dummyGraph';
+import useDummy from '@/composables/dummy';
 import Header from '@/components/Landing/Header.vue';
 import WorksWithYnabSvg from '@/assets/works_with_ynab.vue';
 
@@ -111,13 +112,14 @@ export default defineComponent({
     WorksWithYnabSvg,
   },
   setup() {
-    const data = ref([{ worth: 0, date: '' }]);
+    const { loadNetWorth, getNetWorth: data } = useDummy();
+
     const chartData = ref({});
 
     const interval = ref(0);
 
     function rebuild() {
-      data.value = getData();
+      loadNetWorth();
       chartData.value = getChartData(data.value);
 
       clearInterval(interval.value);

@@ -18,11 +18,11 @@
         <ReloadIcon
           class="pl-3 h-full items-center"
           id="reload-net-worth"
-          :rotate="rotate"
+          :rotate="spinLoadingIcon"
           :ready="ready"
-          :action="reloadAction"
+          :action="reload"
           size="small"
-          >{{ rotate || !ready ? 'Loading...' : reloadText }}</ReloadIcon
+          >{{ spinLoadingIcon || !ready ? 'Loading...' : reloadText }}</ReloadIcon
         >
       </div>
     </div>
@@ -43,8 +43,6 @@
           <NetWorthGraph
             class="col-span-3 md:col-span-2 min-h-540 md:min-h-0 order-1 md:order-2"
             :netWorth="netWorth"
-            :forecast="forecast"
-            :combined="combined"
             v-on:dateHighlighted="dateHighlighted"
           />
         </div>
@@ -61,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import DateSelect from '@/components/General/DateSelect.vue';
 import Spinner from '@/components/General/Spinner.vue';
 import CurrentNetWorthSummary from '@/components/General/CurrentNetWorthSummary.vue';
@@ -70,10 +68,9 @@ import NetWorthStats from '@/components/Stats/NetWorth.vue';
 import NetWorthTable from '@/components/Tables/NetWorth.vue';
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue';
 import MonthlyAverage from '@/components/Graphs/MonthlyAverage.vue';
-import useYnab from '@/composables/ynab';
-import { getData as getDummyData } from '@/composables/dummyGraph';
+
 import { WorthDate } from '@/composables/types';
-import useSettings from '@/composables/settings';
+import useNetWorth from '@/composables/netWorth';
 
 export default defineComponent({
   name: 'Net Worth',
@@ -89,94 +86,42 @@ export default defineComponent({
   },
   setup() {
     const {
-      getNetWorth,
-      getForecast,
-      getCombined,
-      getSelectedStartDate,
-      getSelectedEndDate,
-      getFilteredDateRange,
-      loadMonthlyData,
-      createDateList,
-      state,
-    } = useYnab();
+      loadData: reload,
+      netWorth,
+      reloadText,
+      startDate,
+      endDate,
+      loadingStatus,
+      spinLoadingIcon,
+      dateList,
+    } = useNetWorth();
 
-    const { isDummy: isDummyFlag } = useSettings();
-
-    const selectedItem = ref<WorthDate | null>(null);
-    const reloadAction = ref<() => void>(loadMonthlyData);
-    const reloadText = ref<string>();
-    const netWorth = ref<WorthDate[] | null>(null);
-    const dateList = ref<string[]>();
-    const startDate = ref<string>();
-    const endDate = ref<string>();
+    function defaultSelectedItem() {
+      const data = netWorth.value ?? [];
+      return data[data.length - 1];
+    }
+    const selectedItem = ref<WorthDate | null>(defaultSelectedItem());
 
     function dateHighlighted(item: WorthDate) {
       selectedItem.value = item;
     }
 
-    function useRealData() {
-      const data = getFilteredDateRange(getNetWorth.value) ?? [];
-      const dates = createDateList(getNetWorth.value);
-      netWorth.value = data;
-      dateList.value = dates;
-      reloadAction.value = loadMonthlyData;
-      reloadText.value = 'Refresh';
-      startDate.value = getSelectedStartDate.value ?? '';
-      endDate.value = getSelectedEndDate.value ?? '';
-      dateHighlighted(data[data.length - 1]);
-    }
-
-    function useDummyData() {
-      const data = getDummyData();
-      const dates = createDateList(data);
-      netWorth.value = data;
-      dateList.value = dates;
-      reloadAction.value = useDummyData;
-      reloadText.value = 'Randomize Dummy Data';
-      startDate.value = data[0].date;
-      endDate.value = data[data.length - 1].date;
-      dateHighlighted(data[data.length - 1]);
-    }
-
-    function reload() {
-      isDummyFlag.value ? useDummyData() : useRealData();
-    }
-
-    watch(
-      () => isDummyFlag.value,
-      () => reload(),
-    );
-
     reload();
 
     const ready = computed(() => netWorth.value && netWorth.value.length > 0);
-    const loadingStatus = computed(() => state.loadingNetWorthStatus);
-    const rotate = computed(() => state.loadingNetWorthStatus === 'loading');
-
-    watch(
-      () => loadingStatus.value,
-      () => {
-        if (loadingStatus.value === 'complete') reload();
-      },
-    );
 
     return {
+      reload,
+      dateHighlighted,
       netWorth,
       dateList,
-      reloadAction,
       reloadText,
-      forecast: getForecast,
-      combined: getCombined,
-      loading: state.loadingStatus,
-      loadingNetWorth: state.loadingNetWorthStatus,
-      loadingForecast: state.loadingForecastStatus,
+      loading: loadingStatus,
       startDate,
       endDate,
-      dateHighlighted,
       selectedItem,
       ready,
-      rotate,
-      reload,
+      spinLoadingIcon,
     };
   },
 });

@@ -13,13 +13,13 @@
 </template>
 
 <script lang="ts">
+import { computed, defineComponent, PropType } from 'vue';
 import { WorthDate } from '@/composables/types';
 import BarGraph from '@/components/Graphs/BarGraph.vue';
-import { formatCurrency } from '../../services/helper';
-import { BLUE } from '../../colors';
-import { computed, defineComponent, PropType } from 'vue';
+import { formatCurrency, getDiffByMonth } from '@/services/helper';
+import { BLUE } from '@/colors';
 import { ChartData, ChartDataset, ChartOptions } from 'chart.js';
-import { getDiffByMonth } from '@/composables/netWorth';
+import { monthLabelsShort } from '@/composables/constants';
 
 interface Props {
   netWorth: WorthDate[];
@@ -39,8 +39,6 @@ export default defineComponent({
       return formatCurrency(tickValue, false);
     }
 
-    const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
     const diffByMonth = computed(() => getDiffByMonth(props.netWorth));
 
     const data = computed(() => {
@@ -56,7 +54,7 @@ export default defineComponent({
       ];
 
       const chartData: ChartData = {
-        labels,
+        labels: monthLabelsShort,
         datasets,
       };
 

@@ -81,79 +81,30 @@
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue';
 import CircleCheckIcon from '@/components/Icons/CircleCheckIcon.vue';
 import ArrowRightCircleIcon from '@/components/Icons/ArrowRightCircleIcon.vue';
-import { formatDate } from '@/services/helper';
+import { formatDate, dateDifFormat } from '@/services/helper';
 import { computed, defineComponent } from 'vue';
 import useYnab from '@/composables/ynab';
-import {
-  differenceInHours,
-  differenceInMinutes,
-  differenceInDays,
-  differenceInMonths,
-  differenceInWeeks,
-  differenceInYears,
-} from 'date-fns';
-
-const TimeUnits = ['year', 'month', 'week', 'day', 'hour', 'minute'] as const;
-type UnitOfTime = typeof TimeUnits[number];
+import useBackend, { BackendType } from '@/composables/backend';
+import { LoadingStatus } from '@/composables/types';
 
 export default defineComponent({
   name: 'Budget Select',
   components: { ReloadIcon, CircleCheckIcon, ArrowRightCircleIcon },
   setup(_, { emit }) {
     const { state, loadBudgets, budgetSelected, sortedBudgets } = useYnab();
-
-    const now = new Date();
-
-    function diffX(date: Date, unit: UnitOfTime) {
-      let diff = 0;
-      switch (unit) {
-        case 'year':
-          diff = differenceInYears(now, date);
-          break;
-        case 'month':
-          diff = differenceInMonths(now, date);
-          break;
-        case 'week':
-          diff = differenceInWeeks(now, date);
-          break;
-        case 'day':
-          diff = differenceInDays(now, date);
-          break;
-        case 'hour':
-          diff = differenceInHours(now, date);
-          break;
-        case 'minute':
-          diff = differenceInMinutes(now, date);
-          break;
-      }
-      return diff;
-    }
-
-    function dateDifFormat(date: string) {
-      let message: string | null = null;
-
-      for (const range of TimeUnits) {
-        const diff = diffX(new Date(date), range);
-        if (diff > 0) {
-          const ps = diff === 1 ? range : range + 's';
-          message = `${diff} ${ps} ago`;
-          break;
-        }
-      }
-
-      if (!message) message = 'Just now';
-
-      return message;
-    }
+    const { setActiveBackend } = useBackend();
 
     if (state.budgets.length === 0) loadBudgets();
 
-    const rotate = computed(() => state.loadingBudgetsStatus === 'loading');
-    const ready = computed(() => state.loadingBudgetsStatus === 'ready');
+    const rotate = computed(() => state.loadingBudgetsStatus === LoadingStatus.loading);
+    const ready = computed(() => state.loadingBudgetsStatus === LoadingStatus.ready);
     const selectedBudgetId = computed(() => state.selectedBudgetId);
 
     return {
-      go: () => emit('done'),
+      go: () => {
+        setActiveBackend(BackendType.ynab);
+        emit('done');
+      },
       dateDifFormat,
       sortedBudgets,
       loadBudgets,

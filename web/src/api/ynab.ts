@@ -8,9 +8,8 @@ async function get<T>(url: string): Promise<AxiosResponse<T>> {
   const { getToken } = useSession();
   const baseConfig: AxiosRequestConfig = {
     baseURL: `${apiUrl}/ynab`,
-    headers: { 'wealth-session-token': getToken.value },
+    headers: { 'wealth-session-token': getToken.value ?? '' },
   };
-  console.log(apiUrl);
   const ynab = axios.create(baseConfig);
   return ynab.get<T>(url);
 }
