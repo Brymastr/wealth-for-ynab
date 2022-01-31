@@ -10,4 +10,7 @@ docker run -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
   -e AWS_REGION=$region \
   -e AWS_ACCESS_KEY_ID=$access_key_id \
   -e AWS_SECRET_ACCESS_KEY=$secret_access_key \
-  --entrypoint /aws-lambda/aws-lambda-rie wealth/$FUNCTION_SCOPE/$FUNCTION_NAME /usr/local/bin/npx /home/node/aws-lambda-ric/bin/index.js login.handler
+  --entrypoint /aws-lambda/aws-lambda-rie \
+      wealth/$FUNCTION_SCOPE/$FUNCTION_NAME \
+      /usr/local/bin/npx /home/node/aws-lambda-ric/bin/index.js \
+      $FUNCTION_NAME.handler

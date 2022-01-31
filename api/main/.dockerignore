@@ -9,3 +9,4 @@ jest.config.js
 /aws-lambda-ric
 /scripts
 !scripts/build-code
+/events
