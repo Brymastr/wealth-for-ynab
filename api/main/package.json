@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Wealth for YNAB",
   "scripts": {
-    "build": "./build",
+    "build": "./scripts/build-code",
     "test": "jest",
     "test-watch": "jest --watch",
     "logs": "./logs"
@@ -20,11 +20,13 @@
   },
   "homepage": "https://github.com/brymastr/wealth-for-ynab#readme",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.22.0",
-    "@aws-sdk/client-ssm": "^3.22.0",
-    "@aws-sdk/util-dynamodb": "^3.22.0",
+    "@aws-sdk/client-dynamodb": "^3.47.0",
+    "@aws-sdk/client-ssm": "^3.47.0",
+    "@aws-sdk/util-dynamodb": "^3.47.0",
     "axios": "^0.21.1",
     "date-fns": "^2.22.1",
+    "source-map-support": "^0.5.21",
+    "tsconfig-paths": "^3.10.1",
     "uuid": "^8.3.2",
     "ynab": "^1.25.0"
   },
@@ -38,7 +40,6 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.3",
     "ts-node": "^10.1.0",
-    "tsconfig-paths": "^3.10.1",
     "typescript": "^4.3.5"
   }
 }

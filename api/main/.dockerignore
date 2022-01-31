@@ -4,3 +4,8 @@ Dockerfile
 .dockerignore
 **/*.test.ts
 **/*.env
+jest.config.js
+.prettierrc
+/aws-lambda-ric
+/scripts
+!scripts/build-code

@@ -49,9 +49,7 @@ export default class ParameterStoreCache {
 
   public async get(key: string): Promise<string | undefined>;
   public async get(keys: string[]): Promise<Array<string | undefined>>;
-  public async get(
-    keys: string | string[],
-  ): Promise<string | Array<string | undefined> | undefined> {
+  public async get(keys: string | string[]): Promise<string | Array<string | undefined> | undefined> {
     if (this.expires < Date.now()) await this.load();
 
     const queryKeys = [];

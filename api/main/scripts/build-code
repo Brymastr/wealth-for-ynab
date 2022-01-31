@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 ./node_modules/node-jq/bin/jq ".include = [\"src/functions/$2/$1.ts\"]" tsconfig.json > tsconfig2.json && \
   ./node_modules/.bin/tsc -p tsconfig2.json && \
   cp tsconfig2.json dist/tsconfig.json && \

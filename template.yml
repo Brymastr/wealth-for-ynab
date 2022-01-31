@@ -52,6 +52,7 @@ Resources:
     Metadata:
       DockerTag: latest
       DockerContext: api/main
+      Dockerfile: Dockerfile
       DockerBuildArgs:
         FUNCTION_NAME: logout
         FUNCTION_SCOPE: other
@@ -70,6 +71,7 @@ Resources:
     Metadata:
       DockerTag: latest
       DockerContext: api/main
+      Dockerfile: Dockerfile
       DockerBuildArgs:
         FUNCTION_NAME: verifyToken
         FUNCTION_SCOPE: other
@@ -92,6 +94,7 @@ Resources:
     Metadata:
       DockerTag: latest
       DockerContext: api/main
+      Dockerfile: Dockerfile
       DockerBuildArgs:
         FUNCTION_NAME: login
         FUNCTION_SCOPE: ynab
@@ -113,6 +116,7 @@ Resources:
     Metadata:
       DockerTag: latest
       DockerContext: api/main
+      Dockerfile: Dockerfile
       DockerBuildArgs:
         FUNCTION_NAME: token
         FUNCTION_SCOPE: ynab

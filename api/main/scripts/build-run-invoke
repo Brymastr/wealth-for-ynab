@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+FUNCTION_NAME=$1
+FUNCTION_SCOPE=$2
+
+./scripts/build-docker $FUNCTION_NAME $FUNCTION_SCOPE
+containerId=`./scripts/run-docker $FUNCTION_NAME $FUNCTION_SCOPE`
+./scripts/invoke $FUNCTION_SCOPE-$FUNCTION_NAME
+docker stop $containerId

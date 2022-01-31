@@ -1,38 +1,25 @@
-FROM lambci/lambda:build-nodejs12.x as dependencies
-
+FROM public.ecr.aws/k6u4r4g3/lambda-ric-node:latest as base
 COPY package*.json ./
-RUN npm set progress=false && \
-    npm config set depth 0 && \
-    npm install --quiet --only-prod
 
 
+FROM base as prod_mods
+RUN npm ci --production --silent
 
-FROM lambci/lambda:build-nodejs12.x as build
 
+FROM base as build
 ARG FUNCTION_NAME
 ARG FUNCTION_SCOPE
-
-COPY package*.json ./
-
-RUN npm set progress=false && \
-    npm config set depth 0 && \
-    npm install --quiet
-
+RUN npm ci --silent
 COPY . ./
-
 RUN npm run build -- $FUNCTION_NAME $FUNCTION_SCOPE
 
 
-
-FROM amazon/aws-lambda-nodejs:12 as release
-
-ARG FUNCTION_NAME
+FROM base as release
 ARG FUNCTION_SCOPE
-
-COPY --from=dependencies /var/task/node_modules ./node_modules/
-COPY --from=build /var/task/dist/ .
-
-ENV HANDLER=functions/$FUNCTION_SCOPE/$FUNCTION_NAME.handler
-
-ADD entrypoint.sh /entrypoint.sh
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENV func $FUNCTION_SCOPE
+COPY --from=prod_mods /home/node/app/node_modules ./node_modules
+COPY --from=build /home/node/app/tsconfig.json .
+COPY --from=build /home/node/app/dist/ .
+WORKDIR /home/node/app/functions/$FUNCTION_SCOPE
+ENTRYPOINT ["/usr/local/bin/npx", "/home/node/aws-lambda-ric/bin/index.js"]
+CMD "$func.handler"

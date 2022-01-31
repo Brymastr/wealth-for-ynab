@@ -1,0 +1,6 @@
+{
+  "body": {},
+  "path": "/auth/ynab/login",
+  "httpMethod": "POST",
+  "isBase64Encoded": false
+}

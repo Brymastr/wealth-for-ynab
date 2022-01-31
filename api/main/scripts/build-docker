@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+FUNCTION_NAME=$1
+FUNCTION_SCOPE=$2
+
+docker buildx build -t wealth/$FUNCTION_SCOPE/$FUNCTION_NAME . --build-arg FUNCTION_NAME=$FUNCTION_NAME --build-arg FUNCTION_SCOPE=$FUNCTION_SCOPE

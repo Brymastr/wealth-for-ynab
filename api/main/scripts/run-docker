@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+profile=${AWS_PROFILE:-default}
+region=`aws configure get region --profile $profile`
+access_key_id=`aws configure get aws_access_key_id --profile $profile`
+secret_access_key=`aws configure get aws_secret_access_key --profile $profile`
+FUNCTION_NAME=$1
+FUNCTION_SCOPE=$2
+
+docker run -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
+  -e AWS_REGION=$region \
+  -e AWS_ACCESS_KEY_ID=$access_key_id \
+  -e AWS_SECRET_ACCESS_KEY=$secret_access_key \
+  --entrypoint /aws-lambda/aws-lambda-rie wealth/$FUNCTION_SCOPE/$FUNCTION_NAME /usr/local/bin/npx /home/node/aws-lambda-ric/bin/index.js login.handler

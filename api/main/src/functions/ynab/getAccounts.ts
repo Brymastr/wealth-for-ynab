@@ -1,4 +1,4 @@
-import 'util/registration';
+import '../../util/registration';
 
 import { ynabClientFactory } from 'util/helpers';
 import { basicCatch } from 'util/catchers';

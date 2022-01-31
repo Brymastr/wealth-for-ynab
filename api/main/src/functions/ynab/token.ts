@@ -1,4 +1,4 @@
-import 'util/registration';
+import '../../util/registration';
 
 import YNAB from 'util/Ynab';
 import Parameters from 'util/ParameterStoreCache';
