@@ -17,7 +17,6 @@
     <DesktopNav v-if="width > 640" />
     <MobileNav v-else />
   </nav>
-  {{ width }}
 </template>
 
 <script lang="ts">

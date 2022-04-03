@@ -32,7 +32,7 @@
       <!-- graph area -->
       <div class="bg-gray-300 min-h-540 md:h-screen-1/2 px-3">
         <div class="xl:container mx-auto grid grid-cols-3 gap-x-5 h-full">
-          <div class="flex flex-col justify-center md:col-span-1 col-span-3 order-2">
+          <div class="flex flex-col justify-center md:col-span-1 col-span-3 order-2 mb-4 md:mb-0">
             <CurrentNetWorthSummary
               class="bg-gray-200 shadow-lg"
               v-if="selectedItem"
@@ -95,8 +95,6 @@ export default defineComponent({
       spinLoadingIcon,
       dateList,
     } = useNetWorth();
-
-    reload();
 
     function defaultSelectedItem() {
       const data = netWorth.value ?? [];
