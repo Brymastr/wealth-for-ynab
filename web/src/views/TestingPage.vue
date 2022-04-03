@@ -6,16 +6,13 @@
 
 <script>
 import { defineComponent, onMounted } from 'vue';
-// import { Chart } from 'chart.js';
-// @ts-ignore
-import Chart from '@/components/ChartNative';
+import { Chart } from 'chart.js';
 
 export default defineComponent({
   setup() {
     onMounted(() => {
       const ctx = document.getElementById('testing-chart').getContext('2d');
 
-      // @ts-ignore
       new Chart(ctx, {
         type: 'line',
         data: {

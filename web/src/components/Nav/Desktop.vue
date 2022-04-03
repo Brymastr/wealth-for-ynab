@@ -40,7 +40,15 @@ export default defineComponent({
     const settingsSelected = computed(() => navPage.value === 'settings');
     const budgetsSelected = computed(() => navPage.value === 'budgets');
 
-    return { hideTitle, hideLeftSide, settingsSelected, budgetsSelected, goToSettings, goToBudgets, logout };
+    return {
+      hideTitle,
+      hideLeftSide,
+      settingsSelected,
+      budgetsSelected,
+      goToSettings,
+      goToBudgets,
+      logout,
+    };
   },
 });
 </script>

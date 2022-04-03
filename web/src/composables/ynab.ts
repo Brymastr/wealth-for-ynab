@@ -149,6 +149,7 @@ function createOrUpdateBudget(input: Budget) {
   if (budget.forecast === undefined || budget.forecast.length === 0) budget.forecast = [];
 
   budget.first_month = formatEndOfMonth(input.first_month);
+  console.log(input.first_month, budget.first_month);
   budget.last_month = formatEndOfMonth(input.last_month);
 
   state.budgets.push(budget);

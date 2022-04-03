@@ -28,13 +28,12 @@
 <script lang="ts">
 import { defineComponent, onMounted, watch } from 'vue';
 import { ref } from 'vue';
-export type ArrowDirection = 'up' | 'right' | 'down' | 'left';
 
 interface Props {
   id: string;
-  size: string;
   rotate: boolean;
   ready: boolean;
+  size?: string;
   action?: any;
 }
 
@@ -86,7 +85,7 @@ export default defineComponent({
   }
 }
 
-@keyframes spin4 {
+@keyframes spin {
   from {
     transform: rotate(0deg);
   }
@@ -97,6 +96,6 @@ export default defineComponent({
 
 .rotate {
   animation: startSpin 1.05s cubic-bezier(0.54, 0.01, 0.44, 1) 1,
-    spin4 1.05s cubic-bezier(0.54, 0.01, 0.44, 1) 1s infinite;
+    spin 1.05s cubic-bezier(0.54, 0.01, 0.44, 1) 1s infinite;
 }
 </style>

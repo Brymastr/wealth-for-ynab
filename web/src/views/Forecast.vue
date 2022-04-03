@@ -66,7 +66,6 @@ export default defineComponent({
     const ready = computed(() => netWorth.value && netWorth.value.length > 0);
     const loadingStatus = computed(() => state.loadingNetWorthStatus);
 
-    console.log(netWorth.value);
     watch(
       () => loadingStatus.value,
       () => {

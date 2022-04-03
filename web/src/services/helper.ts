@@ -1,5 +1,4 @@
 import numeral from 'numeral';
-import { isBefore, isSameDay, isAfter, format, getDaysInMonth, getMonth } from 'date-fns';
 import { formatToTimeZone } from 'date-fns-timezone';
 import { WorthDate } from '@/composables/types';
 import {
@@ -9,10 +8,47 @@ import {
   differenceInMonths,
   differenceInWeeks,
   differenceInYears,
+  format,
+  getMonth,
 } from 'date-fns';
 
 export function formatDate(date: string | Date) {
   return format(new Date(date), 'MMM yyyy');
+}
+
+export function daysInMonth(inputDate: Date | string) {
+  let year: number;
+  let month: number;
+
+  if (typeof inputDate === 'string') {
+    if (!inputDate.match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}[0-9TZ:.+-]*$/))
+      throw new Error(`${inputDate} is not a valid date string`);
+    year = parseInt(inputDate.substring(0, 4));
+    month = parseInt(inputDate.substring(5, 7)) - 1;
+  } else {
+    year = inputDate.getFullYear();
+    month = inputDate.getMonth();
+  }
+
+  return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+}
+
+export function isBefore(date: Date, dateToCompare: Date) {
+  return date < dateToCompare;
+}
+
+export function isAfter(date: Date, dateToCompare: Date) {
+  return date > dateToCompare;
+}
+
+export function isSameDay(d1: Date, d2: Date) {
+  const d1Year = d1.getUTCFullYear();
+  const d2Year = d2.getUTCFullYear();
+  const d1Month = d1.getUTCMonth();
+  const d2Month = d2.getUTCMonth();
+  const d1Day = d1.getUTCDate();
+  const d2Day = d2.getUTCDate();
+  return d1Year === d2Year && d1Month === d2Month && d1Day === d2Day;
 }
 
 export function formatEndOfMonth(str?: string | null) {
@@ -20,7 +56,7 @@ export function formatEndOfMonth(str?: string | null) {
   const dateFormatted = formatToTimeZone(date, 'YYYY-MM-DD', {
     timeZone: 'UTC',
   });
-  const days = getDaysInMonth(date);
+  const days = daysInMonth(dateFormatted);
   const end = `${dateFormatted.substring(0, 8)}${days}`;
 
   return end;

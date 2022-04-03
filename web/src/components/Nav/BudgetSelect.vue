@@ -22,7 +22,7 @@
       <div class="flex sm:hidden">
         <ReloadIcon
           class="text-3xl -mr-1"
-          id="reload-budgets"
+          id="reload-budgets-small"
           :rotate="rotate"
           :ready="ready"
           :action="loadBudgets"
@@ -42,7 +42,7 @@
       <div class="sm:flex-col sm:items-end hidden sm:flex">
         <ReloadIcon
           class="text-3xl -mr-1"
-          id="reload-budgets"
+          id="reload-budgets-large"
           :rotate="rotate"
           :ready="ready"
           :action="loadBudgets"

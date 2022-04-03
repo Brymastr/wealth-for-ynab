@@ -59,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import DateSelect from '@/components/General/DateSelect.vue';
 import Spinner from '@/components/General/Spinner.vue';
 import CurrentNetWorthSummary from '@/components/General/CurrentNetWorthSummary.vue';
@@ -96,19 +96,25 @@ export default defineComponent({
       dateList,
     } = useNetWorth();
 
+    reload();
+
     function defaultSelectedItem() {
       const data = netWorth.value ?? [];
       return data[data.length - 1];
     }
-    const selectedItem = ref<WorthDate | null>(defaultSelectedItem());
+
+    const selectedItem = ref<WorthDate>(defaultSelectedItem());
 
     function dateHighlighted(item: WorthDate) {
       selectedItem.value = item;
     }
 
-    reload();
-
     const ready = computed(() => netWorth.value && netWorth.value.length > 0);
+
+    watch(
+      () => netWorth.value,
+      () => dateHighlighted(defaultSelectedItem()),
+    );
 
     return {
       reload,
