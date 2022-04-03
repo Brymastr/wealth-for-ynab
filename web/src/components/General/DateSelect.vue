@@ -65,7 +65,6 @@ export default defineComponent({
     endDate: { type: String, required: true },
   },
   setup(props: Props, { emit }) {
-    console.log(props);
     const { state, setBudgetStartDate, setBudgetEndDate } = useYnab();
     const firstDate = computed(() => props.dates[0]);
     const lastDate = computed(() => props.dates[props.dates.length - 1]);

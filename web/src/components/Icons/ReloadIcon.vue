@@ -61,7 +61,7 @@ export default defineComponent({
 
     onMounted(() => {
       const element = document.getElementById(props.id);
-      if (element) element.addEventListener('animationiteration', listener, false);
+      element?.addEventListener('animationiteration', listener);
     });
 
     return {

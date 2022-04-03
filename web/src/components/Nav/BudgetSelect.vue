@@ -19,7 +19,7 @@
         <p>Select a budget to analyze</p>
       </div>
       <!-- small -->
-      <div class="flex sm:hidden">
+      <div class="flex sm:hidden overflow-hidden">
         <ReloadIcon
           class="text-3xl -mr-1"
           id="reload-budgets-small"
@@ -27,7 +27,7 @@
           :ready="ready"
           :action="loadBudgets"
           size="large"
-          >{{ rotate || !ready ? 'Loading...' : '' }}</ReloadIcon
+          >{{ rotate || !ready ? 'Loading ' : '' }}</ReloadIcon
         >
 
         <ArrowRightCircleIcon
@@ -106,10 +106,10 @@ export default defineComponent({
         emit('done');
       },
       dateDifFormat,
-      sortedBudgets,
       loadBudgets,
       budgetSelected,
       formatDate,
+      sortedBudgets,
       selectedBudgetId,
       rotate,
       ready,

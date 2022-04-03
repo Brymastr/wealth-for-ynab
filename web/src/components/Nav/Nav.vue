@@ -14,13 +14,14 @@
     "
     :class="navVisibility"
   >
-    <DesktopNav />
-    <MobileNav />
+    <DesktopNav v-if="width > 640" />
+    <MobileNav v-else />
   </nav>
+  {{ width }}
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue';
 import useNav from '@/composables/nav';
 import useYnab from '@/composables/ynab';
 import DesktopNav from '@/components/Nav/Desktop.vue';
@@ -37,8 +38,23 @@ export default defineComponent({
 
     if (budgetId.value === null) firstUse();
 
+    const width = ref<number>(window.innerWidth);
+
+    function onResize() {
+      width.value = window.innerWidth;
+    }
+
+    onMounted(() => {
+      window.addEventListener('resize', onResize);
+    });
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', onResize);
+    });
+
     return {
       navVisibility,
+      width,
     };
   },
 });

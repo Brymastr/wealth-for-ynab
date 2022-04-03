@@ -287,8 +287,6 @@ describe('isSameDay', () => {
   test('true, different time', () => {
     const d1 = new Date(Date.UTC(2022, 0, 10, 12, 12, 12, 12));
     const d2 = new Date(Date.UTC(2022, 0, 10, 22, 22, 22, 22));
-
-    console.log(d1.toUTCString(), d2.toUTCString());
     const actual = isSameDay(d1, d2);
     expect(actual).toEqual(true);
   });
