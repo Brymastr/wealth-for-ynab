@@ -2,26 +2,27 @@ import { DateRange, LoadingStatus, WorthDate } from './types';
 import useBackend from '@/composables/backend';
 import useDummy from '@/composables/dummy';
 import useYnab from '@/composables/ynab';
-import { computed, ComputedRef } from 'vue';
 import { createDateList, isBetween } from '@/services/helper';
+import { computed, ComputedRef } from 'vue';
 
 const { isDummy, isYnab } = useBackend();
 
-const netWorth = computed(() => {
+const forecast = computed(() => {
   let result: ComputedRef<WorthDate[]> = computed(() => []);
   if (isYnab.value) {
-    const { getNetWorth } = useYnab();
-    result = getNetWorth;
+    const { getForecast, loadForecast } = useYnab();
+    if (!getForecast.value) loadForecast();
+    result = getForecast;
   } else if (isDummy.value) {
-    const { getNetWorth, loadNetWorth } = useDummy();
-    if (!getNetWorth.value) loadNetWorth();
-    result = getNetWorth;
+    const { getForecast, loadForecast } = useDummy();
+    if (!getForecast.value) loadForecast();
+    result = getForecast;
   }
   return result.value;
 });
 
-const netWorthSlice = computed(() => {
-  const data = netWorth.value;
+const forecastSlice = computed(() => {
+  const data = forecast.value;
   const start = startDate.value;
   const end = endDate.value;
   if (!start || !end) return [];
@@ -40,11 +41,11 @@ const reloadText = computed(() => {
 const startDate = computed(() => {
   let result: string;
   if (isYnab.value) {
-    const { getSelectedStartDate } = useYnab();
-    result = getSelectedStartDate.value ?? '';
+    const { getSelectedForecastStartDate } = useYnab();
+    result = getSelectedForecastStartDate.value ?? '';
   } else if (isDummy.value) {
-    const { selectedStartDate } = useDummy();
-    result = selectedStartDate.value ?? '';
+    const { selectedForecastStartDate } = useDummy();
+    result = selectedForecastStartDate.value ?? '';
   } else {
     result = 'oopsie';
   }
@@ -54,11 +55,11 @@ const startDate = computed(() => {
 const endDate = computed(() => {
   let result: string;
   if (isYnab.value) {
-    const { getSelectedEndDate } = useYnab();
-    result = getSelectedEndDate.value ?? '';
+    const { getSelectedForecastEndDate } = useYnab();
+    result = getSelectedForecastEndDate.value ?? '';
   } else if (isDummy.value) {
-    const { selectedEndDate } = useDummy();
-    result = selectedEndDate.value ?? '';
+    const { selectedForecastEndDate } = useDummy();
+    result = selectedForecastEndDate.value ?? '';
   } else {
     result = 'oopsie';
   }
@@ -69,10 +70,10 @@ const loadingStatus = computed(() => {
   let result: LoadingStatus;
   if (isYnab.value) {
     const { state } = useYnab();
-    result = state.loadingNetWorthStatus;
+    result = state.loadingForecastStatus;
   } else if (isDummy.value) {
     const { state } = useDummy();
-    result = state.loadingNetWorthStatus;
+    result = state.loadingForecastStatus;
   } else {
     result = LoadingStatus.ready;
   }
@@ -83,10 +84,10 @@ const spinLoadingIcon = computed(() => {
   let result: boolean;
   if (isYnab.value) {
     const { state } = useYnab();
-    result = state.loadingNetWorthStatus === LoadingStatus.loading;
+    result = state.loadingForecastStatus === LoadingStatus.loading;
   } else if (isDummy.value) {
     const { state } = useDummy();
-    result = state.loadingNetWorthStatus === LoadingStatus.loading;
+    result = state.loadingForecastStatus === LoadingStatus.loading;
   } else {
     result = false;
   }
@@ -95,33 +96,33 @@ const spinLoadingIcon = computed(() => {
 
 function loadData() {
   if (isYnab.value) {
-    const { loadNetWorth } = useYnab();
-    loadNetWorth();
+    const { loadForecast } = useYnab();
+    loadForecast();
   } else if (isDummy.value) {
-    const { loadNetWorth } = useDummy();
-    loadNetWorth();
+    const { loadForecast } = useDummy();
+    loadForecast();
   }
 }
 
 function setDateRange(dateRange: DateRange) {
   if (isYnab.value) {
-    const { setBudgetDateRange } = useYnab();
-    setBudgetDateRange(dateRange);
+    const { setForecastDateRange } = useYnab();
+    setForecastDateRange(dateRange);
   } else if (isDummy.value) {
-    const { setDateRange } = useDummy();
-    setDateRange(dateRange);
+    const { setForecastDateRange } = useDummy();
+    setForecastDateRange(dateRange);
   }
 }
 
-const dateList = computed(() => createDateList(netWorth.value));
+const dateList = computed(() => createDateList(forecast.value));
 
-export default function useNetWorth() {
+export default function useForecast() {
   return {
     loadData,
     setDateRange,
     dateList,
-    netWorth,
-    netWorthSlice,
+    forecast,
+    forecastSlice,
     reloadText,
     startDate,
     endDate,

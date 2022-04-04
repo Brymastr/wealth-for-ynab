@@ -10,3 +10,8 @@ export enum LoadingStatus {
   'complete',
   'ready',
 }
+
+export interface DateRange {
+  startDate?: string;
+  endDate?: string;
+}

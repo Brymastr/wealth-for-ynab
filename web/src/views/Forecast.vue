@@ -45,9 +45,9 @@ import DateSelect from '@/components/General/DateSelect.vue';
 import Spinner from '@/components/General/Spinner.vue';
 import ForecastGraph from '@/components/Graphs/Forecast.vue';
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue';
-import useYnab, { BudgetDates } from '@/composables/ynab';
 import useNetWorth from '@/composables/netWorth';
-import { LoadingStatus } from '@/composables/types';
+import useForecast from '@/composables/forecast';
+import { DateRange, LoadingStatus } from '@/composables/types';
 import { createDateList } from '@/services/helper';
 
 export default defineComponent({
@@ -59,29 +59,30 @@ export default defineComponent({
     ForecastGraph,
   },
   setup() {
-    const { getNetWorth, getForecast, loadForecast, state, setForecastDateRange } = useYnab();
-    const { reloadText, forecastStartDate, forecastEndDate, sliceForecastNetWorth } = useNetWorth();
+    const { netWorthSlice, netWorth } = useNetWorth();
+    const {
+      reloadText,
+      forecastSlice,
+      forecast,
+      loadData: loadForecast,
+      spinLoadingIcon,
+      startDate,
+      endDate,
+      setDateRange: setForecastDateRange,
+    } = useForecast();
 
-    if (getForecast?.value?.length === 0) loadForecast();
+    if (forecast?.value?.length === 0) loadForecast();
 
-    const ready = computed(() => getNetWorth?.value?.length > 0 && getForecast?.value?.length > 0);
-
-    const spinLoadingIcon = computed(() => {
-      const result = state.loadingForecastStatus === LoadingStatus.loading;
-      return result;
-    });
+    const ready = computed(() => netWorth?.value?.length > 0 && forecast?.value?.length > 0);
 
     const dateList = computed(() => {
-      const combined = [...getNetWorth.value, ...getForecast.value];
+      const combined = [...netWorth.value, ...forecast.value];
       return createDateList(combined);
     });
 
-    function dateSelected(payload: BudgetDates) {
+    function dateSelected(payload: DateRange) {
       setForecastDateRange(payload);
     }
-
-    const realNetWorth = computed(() => sliceForecastNetWorth(getNetWorth.value));
-    const forecastNetWorth = computed(() => sliceForecastNetWorth(getForecast.value));
 
     function dateHighlighted() {
       console.log('dateHighlighted');
@@ -89,10 +90,10 @@ export default defineComponent({
 
     return {
       ready,
-      realNetWorth,
-      forecastNetWorth,
-      startDate: forecastStartDate,
-      endDate: forecastEndDate,
+      realNetWorth: netWorthSlice,
+      forecastNetWorth: forecastSlice,
+      startDate,
+      endDate,
       reloadText,
       spinLoadingIcon,
       dateList,
@@ -103,6 +104,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style>
-</style>

@@ -70,11 +70,9 @@ import NetWorthStats from '@/components/Stats/NetWorth.vue';
 import NetWorthTable from '@/components/Tables/NetWorth.vue';
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue';
 import MonthlyAverage from '@/components/Graphs/MonthlyAverage.vue';
-
-import { WorthDate } from '@/composables/types';
+import { DateRange, WorthDate } from '@/composables/types';
 import useNetWorth from '@/composables/netWorth';
 import { useRouter } from 'vue-router';
-import useYnab, { BudgetDates } from '@/composables/ynab';
 
 export default defineComponent({
   name: 'Net Worth',
@@ -99,9 +97,9 @@ export default defineComponent({
       loadingStatus,
       spinLoadingIcon,
       dateList,
+      setDateRange,
     } = useNetWorth();
     const router = useRouter();
-    const { state, setBudgetDateRange } = useYnab();
 
     function defaultSelectedItem() {
       const data = netWorthSlice.value ?? [];
@@ -121,14 +119,6 @@ export default defineComponent({
       () => dateHighlighted(defaultSelectedItem()),
     );
 
-    function goToForecast() {
-      router.push({ name: 'Forecast' });
-    }
-
-    function dateSelected(payload: BudgetDates) {
-      setBudgetDateRange(payload);
-    }
-
     return {
       reload,
       dateHighlighted,
@@ -141,8 +131,8 @@ export default defineComponent({
       selectedItem,
       ready,
       spinLoadingIcon,
-      goToForecast,
-      dateSelected,
+      goToForecast: () => router.push({ name: 'Forecast' }),
+      dateSelected: (payload: DateRange) => setDateRange(payload),
     };
   },
 });

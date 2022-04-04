@@ -48,6 +48,7 @@ import { computed, defineComponent, PropType, ref } from 'vue';
 import { addDays } from 'date-fns';
 import { formatToTimeZone as format } from 'date-fns-timezone';
 import Underline from '@/components/General/Underline.vue';
+import { DateRange } from '@/composables/types';
 
 interface Props {
   dates: string[];
@@ -93,10 +94,11 @@ export default defineComponent({
     }
 
     function dateSelected() {
-      emit('dateSelected', {
-        selectedStartDate: selectedStartDate.value,
-        selectedEndDate: selectedEndDate.value,
-      });
+      const dateRange: DateRange = {
+        startDate: selectedStartDate.value,
+        endDate: selectedEndDate.value,
+      };
+      emit('dateSelected', dateRange);
     }
 
     return {

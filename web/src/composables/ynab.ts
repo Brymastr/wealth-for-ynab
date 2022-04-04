@@ -1,10 +1,10 @@
 import { computed, reactive, readonly } from 'vue';
 import { BudgetDetail, Account } from 'ynab';
 import numeral from 'numeral';
-import { LoadingStatus, WorthDate } from './types';
+import { DateRange, LoadingStatus, WorthDate } from './types';
 import useYnabApi from '@/api/ynab';
 import useForecastApi from '@/api/forecast';
-import { formatEndOfMonth, isBetween, createDateList, getUnixTime, isAfter } from '@/services/helper';
+import { formatEndOfMonth, createDateList, getUnixTime, isAfter } from '@/services/helper';
 import useComposition from './base';
 const namespace = 'ynab';
 
@@ -18,12 +18,6 @@ const { getForecast: getRemoteForecast } = useForecastApi();
 interface AccountsPayload {
   budgetId: string;
   accounts: Account[];
-}
-
-export interface BudgetDates {
-  selectedStartDate?: string;
-  selectedEndDate?: string;
-  id?: string;
 }
 
 export interface Budget extends BudgetDetail {
@@ -50,6 +44,9 @@ interface State {
   forecastUpdatedAt: number | null;
 }
 
+////////////////
+//    State   //
+////////////////
 const defaultState: State = {
   budgets: [],
   selectedBudgetId: null,
@@ -64,9 +61,6 @@ const defaultState: State = {
   loadingForecastStatus: LoadingStatus.ready,
 };
 
-////////////////
-//    State   //
-////////////////
 const state = reactive<State>(defaultState);
 
 function clearState() {
@@ -152,7 +146,7 @@ function setLoadingBudgets(status: LoadingStatus = LoadingStatus.loading) {
 function setLoadingAccounts(status: LoadingStatus = LoadingStatus.loading) {
   state.loadingAccountsStatus = status;
 }
-function setLoadingForecast(status: LoadingStatus) {
+function setLoadingForecast(status: LoadingStatus = LoadingStatus.loading) {
   state.loadingForecastStatus = status;
 }
 function setLoadingNetWorth(status: LoadingStatus = LoadingStatus.loading) {
@@ -166,42 +160,18 @@ function setSelectedBudget(budget: Budget) {
   state.selectedBudgetId = budget.id;
   set();
 }
-function setBudgetStartDate(payload: BudgetDates) {
+function setBudgetDateRange(payload: DateRange) {
   const budget = getBudgetById();
   if (!budget) return;
-  budget.selectedStartDate = payload.selectedStartDate;
+  if (payload.startDate) budget.selectedStartDate = payload.startDate;
+  if (payload.endDate) budget.selectedEndDate = payload.endDate;
   set();
 }
-function setBudgetEndDate(payload: BudgetDates) {
+function setForecastDateRange(payload: DateRange) {
   const budget = getBudgetById();
   if (!budget) return;
-  budget.selectedEndDate = payload.selectedEndDate;
-  set();
-}
-function setBudgetDateRange(payload: BudgetDates) {
-  const budget = getBudgetById();
-  if (!budget) return;
-  if (payload.selectedStartDate) budget.selectedStartDate = payload.selectedStartDate;
-  if (payload.selectedEndDate) budget.selectedEndDate = payload.selectedEndDate;
-  set();
-}
-function setForecastStartDate(payload: BudgetDates) {
-  const budget = getBudgetById();
-  if (!budget) return;
-  budget.selectedForecastStartDate = payload.selectedStartDate;
-  set();
-}
-function setForecastEndDate(payload: BudgetDates) {
-  const budget = state.budgets.find(x => x.id === payload.id);
-  if (!budget) return;
-  budget.selectedForecastEndDate = payload.selectedEndDate;
-  set();
-}
-function setForecastDateRange(payload: BudgetDates) {
-  const budget = getBudgetById();
-  if (!budget) return;
-  if (payload.selectedStartDate) budget.selectedForecastStartDate = payload.selectedStartDate;
-  if (payload.selectedEndDate) budget.selectedForecastEndDate = payload.selectedEndDate;
+  if (payload.startDate) budget.selectedForecastStartDate = payload.startDate;
+  if (payload.endDate) budget.selectedForecastEndDate = payload.endDate;
   set();
 }
 function setAccountsUpdatedAt(date: number) {
@@ -321,7 +291,7 @@ async function loadNetWorth() {
   setTimeout(() => setLoadingNetWorth(LoadingStatus.ready), 2000);
 }
 async function loadForecast() {
-  setLoadingForecast(LoadingStatus.loading);
+  setLoadingForecast();
 
   const budgetId = state.selectedBudgetId;
 
@@ -349,9 +319,8 @@ async function loadForecast() {
 
   const firstDate = netWorth[0].date;
   const lastDate = forecast[forecast.length - 1].date;
-  const budgetDates: BudgetDates = { selectedStartDate: firstDate, selectedEndDate: lastDate, id: budgetId };
-  setForecastStartDate(budgetDates);
-  setForecastEndDate(budgetDates);
+  const dateRange: DateRange = { startDate: firstDate, endDate: lastDate };
+  setForecastDateRange(dateRange);
 
   setLoadingForecast(LoadingStatus.complete);
 
@@ -386,11 +355,7 @@ export default function useYnab() {
     loadAccounts,
     loadNetWorth,
     loadForecast,
-    setBudgetStartDate,
-    setBudgetEndDate,
     setBudgetDateRange,
-    setForecastStartDate,
-    setForecastEndDate,
     setForecastDateRange,
     budgetSelected,
     clearState,
