@@ -12,6 +12,7 @@
       leading-10
       px-3
       sm:px-5
+      select-none
     "
     @click="action"
   >

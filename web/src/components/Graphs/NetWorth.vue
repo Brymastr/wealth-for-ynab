@@ -2,8 +2,8 @@
   <LineGraph
     chart-id="monthly-net-worth-graph"
     class="line-graph cursor-pointer"
-    :data="netWorthGraphData"
-    :options="netWorthGraphOptions"
+    :data="graphData"
+    :options="graphOptions"
   />
 </template>
 
@@ -18,8 +18,6 @@ import { computed, PropType, ref } from 'vue';
 
 interface Props {
   netWorth: WorthDate[];
-  forecast?: WorthDate[];
-  combined?: WorthDate[];
   changeGraph: boolean;
 }
 
@@ -30,14 +28,6 @@ export default defineComponent({
     netWorth: {
       type: Object as PropType<WorthDate[]>,
       required: true,
-    },
-    forecast: {
-      type: Object as PropType<WorthDate[]>,
-      required: false,
-    },
-    combined: {
-      type: Object as PropType<WorthDate[]>,
-      required: false,
     },
     changeGraph: {
       type: Boolean,
@@ -73,7 +63,7 @@ export default defineComponent({
       dateHighlighted(selectedDate.value, selectedDateIndex.value);
     }
 
-    const netWorthGraphData = computed(() => {
+    const graphData = computed(() => {
       const labels = props.netWorth.map(({ date }) => formatDate(date));
 
       let actual = props.netWorth.map(({ worth }) => worth);
@@ -120,7 +110,7 @@ export default defineComponent({
       return chartData;
     });
 
-    const netWorthGraphOptions = computed(() => {
+    const graphOptions = computed(() => {
       const options: ChartOptions = {
         layout: {
           padding: {
@@ -178,7 +168,7 @@ export default defineComponent({
       return options;
     });
 
-    return { netWorthGraphData, netWorthGraphOptions, dateHighlighted };
+    return { graphData, graphOptions, dateHighlighted };
   },
 });
 </script>

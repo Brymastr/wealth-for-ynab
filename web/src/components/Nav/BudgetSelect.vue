@@ -91,7 +91,7 @@ export default defineComponent({
   name: 'Budget Select',
   components: { ReloadIcon, CircleCheckIcon, ArrowRightCircleIcon },
   setup(_, { emit }) {
-    const { state, loadBudgets, budgetSelected, sortedBudgets } = useYnab();
+    const { state, loadBudgets, budgetSelected, getSortedBudgets } = useYnab();
     const { setActiveBackend } = useBackend();
 
     if (state.budgets.length === 0) loadBudgets();
@@ -109,7 +109,7 @@ export default defineComponent({
       loadBudgets,
       budgetSelected,
       formatDate,
-      sortedBudgets,
+      sortedBudgets: getSortedBudgets,
       selectedBudgetId,
       rotate,
       ready,

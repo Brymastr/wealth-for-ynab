@@ -1,9 +1,9 @@
 <template>
   <LineGraph
-    chart-id="monthly-net-worth-graph"
+    chart-id="forecast-graph"
     class="line-graph cursor-pointer"
-    :data="netWorthGraphData"
-    :options="netWorthGraphOptions"
+    :data="graphData"
+    :options="graphOptions"
   />
 </template>
 
@@ -17,6 +17,8 @@ import { computed, PropType, ref, defineComponent } from 'vue';
 
 interface Props {
   netWorth: WorthDate[];
+  forecast: WorthDate[];
+  changeGraph: boolean;
 }
 
 export default defineComponent({
@@ -26,6 +28,14 @@ export default defineComponent({
     netWorth: {
       type: Object as PropType<WorthDate[]>,
       required: true,
+    },
+    forecast: {
+      type: Object as PropType<WorthDate[]>,
+      required: true,
+    },
+    changeGraph: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props: Props, { emit }) {
@@ -58,18 +68,33 @@ export default defineComponent({
       dateHighlighted(selectedDate.value, selectedDateIndex.value);
     }
 
-    const netWorthGraphData = computed(() => {
-      const labels = props.netWorth.map(({ date }) => formatDate(date));
-
+    const graphData = computed(() => {
+      const combined = [...props.netWorth, ...props.forecast];
+      const labels = combined.map(({ date }) => formatDate(date));
       const actual = props.netWorth.map(({ worth }) => worth);
+      const lastActual = actual[actual.length - 1];
+      const nullActual = actual.map(() => null);
+      nullActual.pop();
+      const forecast = [...nullActual, lastActual, ...props.forecast.map(({ worth }) => worth)];
 
       const datasets: ChartDataset[] = [
         {
-          label: 'Monthly Net Worth',
+          label: 'Actual',
           data: actual,
           fill: 'origin',
           backgroundColor: 'rgb(98, 179, 237, 0.5)',
           pointBackgroundColor: 'rgb(98, 179, 237)',
+          pointRadius: 2.5,
+          pointHoverRadius: 5,
+          pointBorderWidth: 0,
+          tension: 0.3,
+        },
+        {
+          label: 'Forecast',
+          data: forecast,
+          fill: 'origin',
+          backgroundColor: 'rgb(98, 179, 237, 0.5)',
+          pointBackgroundColor: 'rgb(222, 156, 24)',
           pointRadius: 2.5,
           pointHoverRadius: 5,
           pointBorderWidth: 0,
@@ -82,7 +107,7 @@ export default defineComponent({
       return chartData;
     });
 
-    const netWorthGraphOptions = computed(() => {
+    const graphOptions = computed(() => {
       const options: ChartOptions = {
         layout: {
           padding: {
@@ -140,7 +165,7 @@ export default defineComponent({
       return options;
     });
 
-    return { netWorthGraphData, netWorthGraphOptions, dateHighlighted };
+    return { graphData, graphOptions, dateHighlighted };
   },
 });
 </script>

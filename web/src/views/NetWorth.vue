@@ -13,7 +13,7 @@
           :dates="dateList"
           :startDate="startDate"
           :endDate="endDate"
-          v-on:dateRangeSelected="reload"
+          @dateSelected="dateSelected"
         />
         <ReloadIcon
           class="pl-3 h-full items-center"
@@ -37,8 +37,10 @@
               class="bg-gray-200 shadow-lg"
               v-if="selectedItem"
               :selectedItem="selectedItem"
-              :forecast="selectedItem.index > netWorth.length - 1"
             />
+            <button class="text-right text-lg text-blue-400 font-medium" @click="goToForecast">
+              Forecast >
+            </button>
           </div>
           <NetWorthGraph
             class="col-span-3 md:col-span-2 min-h-540 md:min-h-0 order-1 md:order-2"
@@ -71,6 +73,8 @@ import MonthlyAverage from '@/components/Graphs/MonthlyAverage.vue';
 
 import { WorthDate } from '@/composables/types';
 import useNetWorth from '@/composables/netWorth';
+import { useRouter } from 'vue-router';
+import useYnab, { BudgetDates } from '@/composables/ynab';
 
 export default defineComponent({
   name: 'Net Worth',
@@ -88,6 +92,7 @@ export default defineComponent({
     const {
       loadData: reload,
       netWorth,
+      netWorthSlice,
       reloadText,
       startDate,
       endDate,
@@ -95,9 +100,11 @@ export default defineComponent({
       spinLoadingIcon,
       dateList,
     } = useNetWorth();
+    const router = useRouter();
+    const { state, setBudgetDateRange } = useYnab();
 
     function defaultSelectedItem() {
-      const data = netWorth.value ?? [];
+      const data = netWorthSlice.value ?? [];
       return data[data.length - 1];
     }
 
@@ -114,10 +121,18 @@ export default defineComponent({
       () => dateHighlighted(defaultSelectedItem()),
     );
 
+    function goToForecast() {
+      router.push({ name: 'Forecast' });
+    }
+
+    function dateSelected(payload: BudgetDates) {
+      setBudgetDateRange(payload);
+    }
+
     return {
       reload,
       dateHighlighted,
-      netWorth,
+      netWorth: netWorthSlice,
       dateList,
       reloadText,
       loading: loadingStatus,
@@ -126,6 +141,8 @@ export default defineComponent({
       selectedItem,
       ready,
       spinLoadingIcon,
+      goToForecast,
+      dateSelected,
     };
   },
 });

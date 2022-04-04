@@ -32,8 +32,9 @@ function setBrynab(payload?: boolean) {
 const isDummy = computed(() => state.dummy);
 
 function setDummy(payload?: boolean) {
-  state.dummy = payload ?? !state.dummy;
-  if (payload === true) setActiveBackend(BackendType.dummy);
+  const newState = payload ?? !state.dummy;
+  state.dummy = newState;
+  if (newState === true) setActiveBackend(BackendType.dummy);
   else setActiveBackendToPrevious();
   set();
 }

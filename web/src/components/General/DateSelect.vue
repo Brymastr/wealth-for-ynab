@@ -11,7 +11,7 @@
           name="date-select-start"
           id="date-select-start"
           v-model="selectedStartDate"
-          @change="dateRangeSelected"
+          @change="dateSelected"
         >
           <option class="bg-gray-800" v-for="date in startDateOptions" :value="date" :key="date">
             {{ formatDate(date) }}
@@ -31,7 +31,7 @@
           name="date-select-end"
           id="date-select-end"
           v-model="selectedEndDate"
-          @change="dateRangeSelected"
+          @change="dateSelected"
         >
           <option class="bg-gray-800" v-for="date in endDateOptions" :value="date" :key="date">
             {{ formatDate(date) }}
@@ -44,7 +44,6 @@
 
 <script lang="ts">
 import { isBetween } from '@/services/helper';
-import useYnab from '@/composables/ynab';
 import { computed, defineComponent, PropType, ref } from 'vue';
 import { addDays } from 'date-fns';
 import { formatToTimeZone as format } from 'date-fns-timezone';
@@ -65,7 +64,6 @@ export default defineComponent({
     endDate: { type: String, required: true },
   },
   setup(props: Props, { emit }) {
-    const { state, setBudgetStartDate, setBudgetEndDate } = useYnab();
     const firstDate = computed(() => props.dates[0]);
     const lastDate = computed(() => props.dates[props.dates.length - 1]);
 
@@ -94,15 +92,11 @@ export default defineComponent({
       return format(new Date(date), 'MMM YYYY', { timeZone: 'UTC' });
     }
 
-    function dateRangeSelected() {
-      const budget = {
+    function dateSelected() {
+      emit('dateSelected', {
         selectedStartDate: selectedStartDate.value,
         selectedEndDate: selectedEndDate.value,
-        id: state.selectedBudgetId,
-      };
-      setBudgetStartDate(budget);
-      setBudgetEndDate(budget);
-      emit('dateRangeSelected');
+      });
     }
 
     return {
@@ -111,7 +105,7 @@ export default defineComponent({
       startDateOptions,
       endDateOptions,
       formatDate,
-      dateRangeSelected,
+      dateSelected,
       selectedStartDate,
       selectedEndDate,
     };

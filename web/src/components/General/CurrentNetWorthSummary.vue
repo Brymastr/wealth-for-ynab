@@ -19,13 +19,7 @@
       :arrow="true"
       :full="true"
     />
-    <Currency
-      class="justify-end text-2xl pr-2 pb-2"
-      v-else
-      :number="0"
-      :arrow="false"
-      :full="false"
-    />
+    <Currency class="justify-end text-2xl pr-2 pb-2" v-else :number="0" :arrow="false" :full="false" />
   </div>
 </template>
 
@@ -37,7 +31,7 @@ import { computed, defineComponent, PropType } from 'vue';
 
 interface Props {
   selectedItem: WorthDate;
-  forecast: boolean;
+  forecast?: boolean;
 }
 
 export default defineComponent({
@@ -50,7 +44,7 @@ export default defineComponent({
     },
     forecast: {
       type: Boolean,
-      required: true,
+      required: false,
     },
   },
   setup(props: Props) {

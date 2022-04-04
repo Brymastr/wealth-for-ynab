@@ -1,19 +1,29 @@
 import { computed, reactive, readonly } from 'vue';
 import { BudgetDetail, Account } from 'ynab';
-import { getUnixTime, isAfter } from 'date-fns';
 import numeral from 'numeral';
 import { LoadingStatus, WorthDate } from './types';
 import useYnabApi from '@/api/ynab';
-import { formatEndOfMonth, isBetween, createDateList } from '@/services/helper';
+import useForecastApi from '@/api/forecast';
+import { formatEndOfMonth, isBetween, createDateList, getUnixTime, isAfter } from '@/services/helper';
 import useComposition from './base';
 const namespace = 'ynab';
 
 const { persist, getModule } = useComposition();
 const { getBudgets, getAccounts, getMonthlyNetWorth } = useYnabApi();
+const { getForecast: getRemoteForecast } = useForecastApi();
 
+////////////////
+// Interfaces //
+////////////////
 interface AccountsPayload {
   budgetId: string;
   accounts: Account[];
+}
+
+export interface BudgetDates {
+  selectedStartDate?: string;
+  selectedEndDate?: string;
+  id?: string;
 }
 
 export interface Budget extends BudgetDetail {
@@ -21,12 +31,13 @@ export interface Budget extends BudgetDetail {
   forecast?: WorthDate[];
   selectedStartDate?: string;
   selectedEndDate?: string;
+  selectedForecastStartDate?: string;
+  selectedForecastEndDate?: string;
   dateList?: string[];
 }
 
 interface State {
   selectedBudgetId: string | null;
-  selectedBudgetName: string | null;
   budgets: Budget[];
   loadingStatus: LoadingStatus;
   loadingBudgetsStatus: LoadingStatus;
@@ -42,7 +53,6 @@ interface State {
 const defaultState: State = {
   budgets: [],
   selectedBudgetId: null,
-  selectedBudgetName: null,
   budgetsUpdatedAt: null,
   accountsUpdatedAt: null,
   netWorthUpdatedAt: null,
@@ -54,12 +64,48 @@ const defaultState: State = {
   loadingForecastStatus: LoadingStatus.ready,
 };
 
-const state = reactive(defaultState);
+////////////////
+//    State   //
+////////////////
+const state = reactive<State>(defaultState);
 
+function clearState() {
+  state.selectedBudgetId = null;
+  state.budgets.length = 0;
+  setBudgetsUpdatedAt(null);
+  set();
+}
+function set() {
+  persist(namespace, {
+    budgets: state.budgets,
+    selectedBudgetId: state.selectedBudgetId,
+    budgetsUpdatedAt: state.budgetsUpdatedAt,
+    accountsUpdatedAt: state.accountsUpdatedAt,
+    netWorthUpdatedAt: state.netWorthUpdatedAt,
+    forecastUpdatedAt: state.forecastUpdatedAt,
+  });
+}
+function reset() {
+  const x = getModule<State>(namespace);
+  if (x?.budgets !== undefined) state.budgets = x.budgets;
+  if (x?.selectedBudgetId !== undefined) state.selectedBudgetId = x.selectedBudgetId;
+  if (x?.budgetsUpdatedAt !== undefined) state.budgetsUpdatedAt = x.budgetsUpdatedAt;
+  if (x?.accountsUpdatedAt !== undefined) state.accountsUpdatedAt = x.accountsUpdatedAt;
+  if (x?.netWorthUpdatedAt !== undefined) state.netWorthUpdatedAt = x.netWorthUpdatedAt;
+  if (x?.forecastUpdatedAt !== undefined) state.forecastUpdatedAt = x.forecastUpdatedAt;
+}
+
+////////////////
+//   Getters  //
+////////////////
 function getBudgetById(budgetId?: string) {
   const id = budgetId ?? state.selectedBudgetId;
   return state.budgets.find(budget => budget.id === id);
 }
+const getSelectedBudgetName = computed(() => {
+  const budget = getBudgetById();
+  return budget?.name;
+});
 const getNetWorth = computed(() => {
   const budget = getBudgetById();
   return budget?.monthlyNetWorth ?? [];
@@ -67,10 +113,6 @@ const getNetWorth = computed(() => {
 const getForecast = computed(() => {
   const budget = getBudgetById();
   return budget?.forecast ?? [];
-});
-const getCombined = computed((budgetId?: string) => {
-  const budget = getBudgetById(budgetId);
-  return budget?.monthlyNetWorth?.concat(...(budget.forecast ?? [])) ?? [];
 });
 const getSelectedStartDate = computed(() => {
   const budget = getBudgetById();
@@ -82,23 +124,37 @@ const getSelectedEndDate = computed(() => {
   if (!budget) return null;
   return budget.selectedEndDate;
 });
-const getFilteredDateRange = (data: WorthDate[]) => {
-  const start = getSelectedStartDate.value;
-  const end = getSelectedEndDate.value;
-  if (!start || !end) return null;
+const getSelectedForecastStartDate = computed(() => {
+  const budget = getBudgetById();
+  if (!budget) return null;
+  return budget.selectedForecastStartDate;
+});
+const getSelectedForecastEndDate = computed(() => {
+  const budget = getBudgetById();
+  if (!budget) return null;
+  return budget.selectedForecastEndDate;
+});
+const getSortedBudgets = computed(() => {
+  return state.budgets.sort((a, b) => {
+    const aDate = new Date(a.last_modified_on ?? '');
+    const bDate = new Date(b.last_modified_on ?? '');
 
-  return data.filter(({ date }) => isBetween(new Date(date), new Date(start), new Date(end)));
-};
+    return isAfter(aDate, bDate) ? -1 : 1;
+  });
+});
 
+////////////////
+//   Setters  //
+////////////////
 function setLoadingBudgets(status: LoadingStatus = LoadingStatus.loading) {
   state.loadingBudgetsStatus = status;
 }
 function setLoadingAccounts(status: LoadingStatus = LoadingStatus.loading) {
   state.loadingAccountsStatus = status;
 }
-// function setLoadingForecast(status: LoadingStatus) {
-//   state.loadingForecastStatus = status;
-// }
+function setLoadingForecast(status: LoadingStatus) {
+  state.loadingForecastStatus = status;
+}
 function setLoadingNetWorth(status: LoadingStatus = LoadingStatus.loading) {
   state.loadingNetWorthStatus = status;
 }
@@ -106,22 +162,46 @@ function setBudgetsUpdatedAt(date: number | null) {
   state.budgetsUpdatedAt = date;
   set();
 }
-
-interface BudgetDates {
-  selectedStartDate: string;
-  selectedEndDate: string;
-  id: string | null;
+function setSelectedBudget(budget: Budget) {
+  state.selectedBudgetId = budget.id;
+  set();
 }
 function setBudgetStartDate(payload: BudgetDates) {
-  const budget = state.budgets.find(x => x.id === payload.id);
+  const budget = getBudgetById();
   if (!budget) return;
   budget.selectedStartDate = payload.selectedStartDate;
   set();
 }
 function setBudgetEndDate(payload: BudgetDates) {
-  const budget = state.budgets.find(x => x.id === payload.id);
+  const budget = getBudgetById();
   if (!budget) return;
   budget.selectedEndDate = payload.selectedEndDate;
+  set();
+}
+function setBudgetDateRange(payload: BudgetDates) {
+  const budget = getBudgetById();
+  if (!budget) return;
+  if (payload.selectedStartDate) budget.selectedStartDate = payload.selectedStartDate;
+  if (payload.selectedEndDate) budget.selectedEndDate = payload.selectedEndDate;
+  set();
+}
+function setForecastStartDate(payload: BudgetDates) {
+  const budget = getBudgetById();
+  if (!budget) return;
+  budget.selectedForecastStartDate = payload.selectedStartDate;
+  set();
+}
+function setForecastEndDate(payload: BudgetDates) {
+  const budget = state.budgets.find(x => x.id === payload.id);
+  if (!budget) return;
+  budget.selectedForecastEndDate = payload.selectedEndDate;
+  set();
+}
+function setForecastDateRange(payload: BudgetDates) {
+  const budget = getBudgetById();
+  if (!budget) return;
+  if (payload.selectedStartDate) budget.selectedForecastStartDate = payload.selectedStartDate;
+  if (payload.selectedEndDate) budget.selectedForecastEndDate = payload.selectedEndDate;
   set();
 }
 function setAccountsUpdatedAt(date: number) {
@@ -132,11 +212,10 @@ function setNetWorthUpdatedAt(date: number) {
   state.netWorthUpdatedAt = date;
   set();
 }
-// function setForecastUpdatedAt(date: number) {
-//   state.forecastUpdatedAt = date;
-//   set();
-// }
-
+function setForecastUpdatedAt(date: number) {
+  state.forecastUpdatedAt = date;
+  set();
+}
 function createOrUpdateBudget(input: Budget) {
   const index = state.budgets.findIndex(x => x.id === input.id);
 
@@ -155,7 +234,6 @@ function createOrUpdateBudget(input: Budget) {
 
   set();
 }
-
 function createOrUpdateAccounts(payload: AccountsPayload) {
   const budget = state.budgets.find(budget => budget.id === payload.budgetId);
 
@@ -169,6 +247,28 @@ function createOrUpdateAccounts(payload: AccountsPayload) {
   set();
 }
 
+////////////////
+//   Loaders  //
+////////////////
+async function loadBudgets() {
+  setLoadingBudgets(LoadingStatus.loading);
+  const remoteBudgets = await getBudgets();
+
+  for (const remoteBudget of remoteBudgets) {
+    const existingBudget = state.budgets.find(b => b.id === remoteBudget.id);
+    if (existingBudget !== undefined) {
+      const updatedBudget = Object.assign({}, existingBudget, remoteBudget);
+      createOrUpdateBudget(updatedBudget);
+    } else {
+      createOrUpdateBudget(remoteBudget);
+    }
+  }
+
+  setLoadingBudgets(LoadingStatus.complete);
+  setBudgetsUpdatedAt(getUnixTime());
+
+  setTimeout(() => setLoadingBudgets(LoadingStatus.ready), 2000);
+}
 async function loadAccounts() {
   setLoadingAccounts(LoadingStatus.loading);
 
@@ -184,11 +284,10 @@ async function loadAccounts() {
 
   setLoadingAccounts(LoadingStatus.complete);
 
-  setAccountsUpdatedAt(getUnixTime(Date.now()));
+  setAccountsUpdatedAt(getUnixTime());
 
   setTimeout(() => setLoadingAccounts(LoadingStatus.ready), 2000);
 }
-
 async function loadNetWorth() {
   setLoadingNetWorth(LoadingStatus.loading);
 
@@ -217,143 +316,82 @@ async function loadNetWorth() {
 
   setLoadingNetWorth(LoadingStatus.complete);
 
-  setNetWorthUpdatedAt(getUnixTime(Date.now()));
+  setNetWorthUpdatedAt(getUnixTime());
 
   setTimeout(() => setLoadingNetWorth(LoadingStatus.ready), 2000);
 }
+async function loadForecast() {
+  setLoadingForecast(LoadingStatus.loading);
 
-// async function loadForecast() {
-//   setLoadingAccounts(LoadingStatus.loading);
+  const budgetId = state.selectedBudgetId;
 
-//   const budgetId = state.selectedBudgetId;
+  if (!budgetId) return null;
 
-//   if (!budgetId) return null;
+  const budget = getBudgetById(budgetId);
+  if (!budget) {
+    setLoadingForecast(LoadingStatus.complete);
+    setTimeout(() => setLoadingForecast(LoadingStatus.ready), 2000);
+    return;
+  }
 
-//   const budget = getBudgetById(budgetId);
-//   if (!budget) {
-//     setLoadingForecast(LoadingStatus.complete);
-//     setTimeout(() => setLoadingForecast(LoadingStatus.ready), 2000);
-//     return;
-//   }
+  const netWorth = budget.monthlyNetWorth;
+  if (netWorth === undefined) {
+    setLoadingForecast(LoadingStatus.complete);
+    setTimeout(() => setLoadingForecast(LoadingStatus.ready), 2000);
+    return;
+  }
 
-//   const netWorth = budget.monthlyNetWorth;
-//   if (netWorth === undefined) {
-//     setLoadingForecast(LoadingStatus.complete);
-//     setTimeout(() => setLoadingForecast(LoadingStatus.ready), 2000);
-//     return;
-//   }
+  const forecast = await getRemoteForecast(netWorth);
 
-//   const forecast = await getRemoteForecast(netWorth);
+  const updatedBudget = Object.assign({}, budget, { forecast });
 
-//   const updatedBudget = Object.assign({}, budget, { forecast });
+  createOrUpdateBudget(updatedBudget);
 
-//   createOrUpdateBudget(updatedBudget);
+  const firstDate = netWorth[0].date;
+  const lastDate = forecast[forecast.length - 1].date;
+  const budgetDates: BudgetDates = { selectedStartDate: firstDate, selectedEndDate: lastDate, id: budgetId };
+  setForecastStartDate(budgetDates);
+  setForecastEndDate(budgetDates);
 
-//   setLoadingForecast(LoadingStatus.complete);
+  setLoadingForecast(LoadingStatus.complete);
 
-//   setForecastUpdatedAt(getUnixTime(Date.now()));
+  setForecastUpdatedAt(getUnixTime());
 
-//   setTimeout(() => setLoadingForecast(LoadingStatus.ready), 2000);
-// }
-
-function loadMonthlyData() {
-  loadNetWorth();
+  setTimeout(() => setLoadingForecast(LoadingStatus.ready), 2000);
 }
-
-function setSelectedBudget(budget: Budget) {
-  state.selectedBudgetId = budget.id;
-  state.selectedBudgetName = budget.name;
-  set();
-}
-
 function budgetSelected(budget: Budget) {
   if (budget.id === state.selectedBudgetId) return;
   setSelectedBudget(budget);
 
   numeral.locale(budget.currency_format?.iso_code);
   const netWorth = getNetWorth.value;
-  if (netWorth.length === 0) loadMonthlyData();
-}
-
-function clearState() {
-  state.selectedBudgetId = null;
-  state.selectedBudgetName = null;
-  state.budgets.length = 0;
-  setBudgetsUpdatedAt(null);
-  set();
-}
-
-async function loadBudgets() {
-  setLoadingBudgets(LoadingStatus.loading);
-  const remoteBudgets = await getBudgets();
-
-  for (const remoteBudget of remoteBudgets) {
-    const existingBudget = state.budgets.find(b => b.id === remoteBudget.id);
-    if (existingBudget !== undefined) {
-      const updatedBudget = Object.assign({}, existingBudget, remoteBudget);
-      createOrUpdateBudget(updatedBudget);
-    } else {
-      createOrUpdateBudget(remoteBudget);
-    }
-  }
-
-  setLoadingBudgets(LoadingStatus.complete);
-  setBudgetsUpdatedAt(getUnixTime(Date.now()));
-
-  setTimeout(() => setLoadingBudgets(LoadingStatus.ready), 2000);
-}
-
-const sortedBudgets = computed(() => {
-  return state.budgets.sort((a, b) => {
-    const aDate = new Date(a.last_modified_on ?? '');
-    const bDate = new Date(b.last_modified_on ?? '');
-
-    return isAfter(aDate, bDate) ? -1 : 1;
-  });
-});
-
-function set() {
-  persist(namespace, {
-    budgets: state.budgets,
-    selectedBudgetId: state.selectedBudgetId,
-    selectedBudgetName: state.selectedBudgetName,
-    budgetsUpdatedAt: state.budgetsUpdatedAt,
-    accountsUpdatedAt: state.accountsUpdatedAt,
-    netWorthUpdatedAt: state.netWorthUpdatedAt,
-    forecastUpdatedAt: state.forecastUpdatedAt,
-  });
-}
-
-function reset() {
-  const x = getModule<State>(namespace);
-  if (x?.budgets !== undefined) state.budgets = x.budgets;
-  if (x?.selectedBudgetId !== undefined) state.selectedBudgetId = x.selectedBudgetId;
-  if (x?.selectedBudgetName !== undefined) state.selectedBudgetName = x.selectedBudgetName;
-  if (x?.budgetsUpdatedAt !== undefined) state.budgetsUpdatedAt = x.budgetsUpdatedAt;
-  if (x?.accountsUpdatedAt !== undefined) state.accountsUpdatedAt = x.accountsUpdatedAt;
-  if (x?.netWorthUpdatedAt !== undefined) state.netWorthUpdatedAt = x.netWorthUpdatedAt;
-  if (x?.forecastUpdatedAt !== undefined) state.forecastUpdatedAt = x.forecastUpdatedAt;
+  if (netWorth.length === 0) loadNetWorth();
 }
 
 export default function useYnab() {
   return {
     state: readonly(state),
     selectedBudgetId: computed(() => state.selectedBudgetId),
-    sortedBudgets,
     getNetWorth,
     getForecast,
-    getCombined,
+    getSortedBudgets,
+    getSelectedBudgetName,
     getSelectedStartDate,
     getSelectedEndDate,
+    getSelectedForecastStartDate,
+    getSelectedForecastEndDate,
     createDateList,
     getBudgetById,
     loadBudgets,
     loadAccounts,
     loadNetWorth,
+    loadForecast,
     setBudgetStartDate,
     setBudgetEndDate,
-    getFilteredDateRange,
-    loadMonthlyData,
+    setBudgetDateRange,
+    setForecastStartDate,
+    setForecastEndDate,
+    setForecastDateRange,
     budgetSelected,
     clearState,
     reset,

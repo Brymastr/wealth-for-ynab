@@ -1,7 +1,7 @@
-import isBefore from 'date-fns/isBefore';
 import { computed, reactive, readonly } from 'vue';
 import { verifySession } from '@/api/session';
 import useComposition from './base';
+import { isBefore } from '@/services/helper';
 const namespace = 'session';
 
 const { persist, getModule } = useComposition();

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 export AWS_PROFILE=personal
-sam build YnabLogin --parallel --cached
-sam local invoke YnabLogin --debug --profile=personal
+sam build Forecast --parallel --cached
+sam local invoke Forecast --profile=personal -e events/forecast_daily_365.json

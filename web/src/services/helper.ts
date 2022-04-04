@@ -16,6 +16,10 @@ export function formatDate(date: string | Date) {
   return format(new Date(date), 'MMM yyyy');
 }
 
+export function getUnixTime() {
+  return Math.round(Date.now() / 1000);
+}
+
 export function daysInMonth(inputDate: Date | string) {
   let year: number;
   let month: number;

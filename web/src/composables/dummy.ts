@@ -13,6 +13,8 @@ interface State {
   loadingNetWorthStatus: LoadingStatus;
   selectedStartDate?: string;
   selectedEndDate?: string;
+  selectedForecastStartDate?: string;
+  selectedForecastEndDate?: string;
 }
 
 const defaultState: State = {
@@ -110,6 +112,8 @@ async function loadNetWorth() {
 const getNetWorth = computed(() => state.monthlyNetWorth);
 const selectedStartDate = computed(() => state.selectedStartDate);
 const selectedEndDate = computed(() => state.selectedEndDate);
+const selectedForecastStartDate = computed(() => state.selectedForecastStartDate);
+const selectedForecastEndDate = computed(() => state.selectedForecastEndDate);
 
 export default function useDummy() {
   return {
@@ -118,5 +122,7 @@ export default function useDummy() {
     getNetWorth,
     selectedStartDate,
     selectedEndDate,
+    selectedForecastStartDate,
+    selectedForecastEndDate,
   };
 }

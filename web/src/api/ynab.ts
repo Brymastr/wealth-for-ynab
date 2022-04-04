@@ -42,11 +42,6 @@ async function getAnnualNetWorth(budgetId: string) {
   return response.data;
 }
 
-async function getForecast(netWorth: WorthDate[]) {
-  const response = await axios.post<WorthDate[]>(`${apiUrl}/forecast`, netWorth);
-  return response.data;
-}
-
 export default function useYnab() {
-  return { getBudgets, getAccounts, getAnnualNetWorth, getMonthlyNetWorth, getDailyNetWorth, getForecast };
+  return { getBudgets, getAccounts, getAnnualNetWorth, getMonthlyNetWorth, getDailyNetWorth };
 }

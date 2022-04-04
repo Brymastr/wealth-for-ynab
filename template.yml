@@ -20,6 +20,7 @@ Parameters:
 Globals:
   Function:
     Timeout: 15
+    MemorySize: 128
     Environment:
       Variables:
         Environment: !Ref Environment
@@ -241,6 +242,8 @@ Resources:
       Dockerfile: Dockerfile
     Properties:
       PackageType: Image
+      MemorySize: 2048
+      Timeout: 30
       Events:
         ApiEvent:
           Type: Api

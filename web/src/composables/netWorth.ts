@@ -3,7 +3,7 @@ import useBackend from '@/composables/backend';
 import useDummy from '@/composables/dummy';
 import useYnab from '@/composables/ynab';
 import { computed, ComputedRef } from 'vue';
-import { createDateList } from '@/services/helper';
+import { createDateList, isBetween } from '@/services/helper';
 
 const { isDummy, isYnab } = useBackend();
 
@@ -13,10 +13,20 @@ const netWorth = computed(() => {
     const { getNetWorth } = useYnab();
     result = getNetWorth;
   } else if (isDummy.value) {
-    const { getNetWorth } = useDummy();
+    const { getNetWorth, loadNetWorth } = useDummy();
+    if (!getNetWorth.value) loadNetWorth();
     result = getNetWorth;
   }
   return result.value;
+});
+
+const netWorthSlice = computed(() => {
+  const data = netWorth.value;
+  const start = startDate.value;
+  const end = endDate.value;
+  if (!start || !end) return [];
+  const filtered = data.filter(({ date }) => isBetween(new Date(date), new Date(start), new Date(end)));
+  return filtered;
 });
 
 const reloadText = computed(() => {
@@ -46,6 +56,34 @@ const endDate = computed(() => {
   if (isYnab.value) {
     const { getSelectedEndDate } = useYnab();
     result = getSelectedEndDate.value ?? '';
+  } else if (isDummy.value) {
+    const { selectedEndDate } = useDummy();
+    result = selectedEndDate.value ?? '';
+  } else {
+    result = 'oopsie';
+  }
+  return result;
+});
+
+const forecastStartDate = computed(() => {
+  let result: string;
+  if (isYnab.value) {
+    const { getSelectedForecastStartDate } = useYnab();
+    result = getSelectedForecastStartDate.value ?? '';
+  } else if (isDummy.value) {
+    const { selectedStartDate } = useDummy();
+    result = selectedStartDate.value ?? '';
+  } else {
+    result = 'oopsie';
+  }
+  return result;
+});
+
+const forecastEndDate = computed(() => {
+  let result: string;
+  if (isYnab.value) {
+    const { getSelectedForecastEndDate } = useYnab();
+    result = getSelectedForecastEndDate.value ?? '';
   } else if (isDummy.value) {
     const { selectedEndDate } = useDummy();
     result = selectedEndDate.value ?? '';
@@ -93,6 +131,18 @@ function loadData() {
   }
 }
 
+const sliceNetWorth = (data: WorthDate[]) => {
+  const start = startDate.value;
+  const end = endDate.value;
+  return data.filter(({ date }) => isBetween(new Date(date), new Date(start), new Date(end)));
+};
+
+const sliceForecastNetWorth = (data: WorthDate[]) => {
+  const start = forecastStartDate.value;
+  const end = forecastEndDate.value;
+  return data.filter(({ date }) => isBetween(new Date(date), new Date(start), new Date(end)));
+};
+
 const dateList = computed(() => createDateList(netWorth.value));
 
 export default function useNetWorth() {
@@ -100,10 +150,15 @@ export default function useNetWorth() {
     loadData,
     dateList,
     netWorth,
+    netWorthSlice,
     reloadText,
     startDate,
     endDate,
+    forecastStartDate,
+    forecastEndDate,
     loadingStatus,
     spinLoadingIcon,
+    sliceNetWorth,
+    sliceForecastNetWorth,
   };
 }
