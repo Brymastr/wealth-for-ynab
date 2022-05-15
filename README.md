@@ -22,15 +22,15 @@ Run `sam build` in the root directory and then `sam local start-api`.
 
 #### Web
 
-Run `./deploy web` in the root directory
+Run `make deploy-web` in the root directory
 
 #### Api (and the rest of the SAM template)
 
-Run `./deploy api` in the root directory
+Run `make deploy-api` in the root directory
 
 #### Both
 
-Run `./deploy` in the root directory
+Run `make deploy-all` in the root directory
 
 ### AWS SSM
 
