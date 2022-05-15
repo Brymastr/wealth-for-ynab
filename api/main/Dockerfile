@@ -1,4 +1,4 @@
-FROM public.ecr.aws/k6u4r4g3/lambda-ric-node:latest as base
+FROM ghcr.io/brymastr/lambda-ric-node:latest as base
 COPY package*.json ./
 
 
