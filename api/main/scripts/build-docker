@@ -2,5 +2,10 @@
 
 FUNCTION_NAME=$1
 FUNCTION_SCOPE=$2
+TAG_NAME=$(echo "wealth/$FUNCTION_SCOPE/$FUNCTION_NAME" | tr '[:upper:]' '[:lower:]')
 
-docker buildx build -t wealth/$FUNCTION_SCOPE/$FUNCTION_NAME . --build-arg FUNCTION_NAME=$FUNCTION_NAME --build-arg FUNCTION_SCOPE=$FUNCTION_SCOPE
+docker buildx build \
+  -t $TAG_NAME \
+  --build-arg FUNCTION_NAME=$FUNCTION_NAME \
+  --build-arg FUNCTION_SCOPE=$FUNCTION_SCOPE \
+  .

@@ -1,12 +1,9 @@
-node_modules
-dist
-Dockerfile
-.dockerignore
-**/*.test.ts
-**/*.env
-jest.config.js
-.prettierrc
-/aws-lambda-ric
-/scripts
-!scripts/build-code
-/events
+# Ignore everything
+**
+
+# Allow certain files and directories
+!/src/**
+!/esbuild.js
+!/tsconfig*.json
+!/package*.json
+!/scripts
