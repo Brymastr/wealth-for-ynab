@@ -1,5 +1,3 @@
-import 'util/registration';
-
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { createResponse } from 'util/helpers';
 import SessionDatastore from 'datastore/Session';

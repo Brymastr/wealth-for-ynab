@@ -1,10 +1,8 @@
-import '../../util/registration';
-
 import YNAB from 'util/Ynab';
 import Parameters from 'util/ParameterStoreCache';
 import { basicCatch } from 'util/catchers';
 import { ClientConfig } from 'util/OAuth2Client';
-import Middleware from 'middleware/Middleware';
+import { Orchestrator } from 'midtown';
 import apiGatewayMiddleware, { Result as ApiGatewayParsedResult } from 'middleware/apiGateway';
 import redirect, { Redirect } from 'middleware/redirect';
 
@@ -31,9 +29,9 @@ async function main({ headers }: ApiGatewayParsedResult): Promise<Redirect> {
   return { location };
 }
 
-export const handler = new Middleware()
-  .pipe(apiGatewayMiddleware)
-  .pipe(main)
-  .pipe(redirect)
+export const handler = new Orchestrator()
+  .use(apiGatewayMiddleware)
+  .use(main)
+  .use(redirect)
   .catch(basicCatch)
-  .handler();
+  .apiGatewayHandler();

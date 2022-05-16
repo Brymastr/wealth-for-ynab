@@ -1,5 +1,3 @@
-import '../../util/registration';
-
 import YNAB from 'util/Ynab';
 import Parameters from 'util/ParameterStoreCache';
 import { basicCatch } from 'util/catchers';
@@ -7,7 +5,7 @@ import { ClientConfig } from 'util/OAuth2Client';
 import YnabDatastore, { Schema as YnabSchema } from 'datastore/Ynab';
 import InfoDatastore, { Schema as InfoSchema } from 'datastore/Info';
 import SessionDatastore, { Schema as SessionSchema } from 'datastore/Session';
-import Middleware from 'middleware/Middleware';
+import { Orchestrator } from 'midtown';
 import apiGatewayMiddleware, { Result as ApiGatewayParsedResult } from 'middleware/apiGateway';
 import redirect, { Redirect } from 'middleware/redirect';
 import { Tokens } from 'datastore/Ynab';
@@ -81,9 +79,9 @@ async function main({ headers, queryStringParameters }: ApiGatewayParsedResult):
   return { location: locationParts.join('&') };
 }
 
-export const handler = new Middleware()
-  .pipe(apiGatewayMiddleware)
-  .pipe(main)
-  .pipe(redirect)
+export const handler = new Orchestrator()
+  .use(apiGatewayMiddleware)
+  .use(main)
+  .use(redirect)
   .catch(basicCatch)
-  .handler();
+  .apiGatewayHandler();

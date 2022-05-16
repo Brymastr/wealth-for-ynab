@@ -1,8 +1,6 @@
-import '../../util/registration';
-
 import { ynabClientFactory } from 'util/helpers';
 import { basicCatch } from 'util/catchers';
-import Middleware from 'middleware/Middleware';
+import { Orchestrator } from 'midtown';
 import apiGatewayMiddleware from 'middleware/apiGateway';
 import sessionMiddleware from 'middleware/sessionToken';
 import parameterMiddleware, { Result as ParametersResult } from 'middleware/parameters';
@@ -18,11 +16,11 @@ async function main(input: ParametersResult): Promise<ApiResponse> {
   return { body: budgets };
 }
 
-export const handler = new Middleware()
-  .pipe(apiGatewayMiddleware)
-  .pipe(sessionMiddleware)
-  .pipe(parameterMiddleware)
-  .pipe(main)
-  .pipe(respond)
+export const handler = new Orchestrator()
+  .use(apiGatewayMiddleware)
+  .use(sessionMiddleware)
+  .use(parameterMiddleware)
+  .use(main)
+  .use(respond)
   .catch(basicCatch)
-  .handler();
+  .apiGatewayHandler();
