@@ -10,7 +10,8 @@
 </template>
 
 <script lang="ts">
-import { WorthDate } from '@/composables/types';
+import netWorth from '@/composables/netWorth';
+import { WorthDate } from '@/types';
 import { computed, defineComponent } from '@vue/runtime-core';
 import { PropType } from 'vue';
 

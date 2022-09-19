@@ -12,22 +12,18 @@
     <Currency class="justify-end text-2xl pr-2" :number="worth" :arrow="false" :full="true" />
 
     <div class="self-center pl-2 pb-2">Change:</div>
-    <Currency
-      class="justify-end text-2xl pr-2 pb-2"
-      v-if="difference"
-      :number="difference"
-      :arrow="true"
-      :full="true"
-    />
+    <Currency class="justify-end text-2xl pr-2 pb-2" v-if="difference" :number="difference" :arrow="true"
+      :full="true" />
     <Currency class="justify-end text-2xl pr-2 pb-2" v-else :number="0" :arrow="false" :full="false" />
   </div>
 </template>
 
 <script lang="ts">
-import { WorthDate } from '@/composables/types';
 import { formatDate } from '@/services/helper';
 import Currency from '@/components/General/Currency.vue';
 import { computed, defineComponent, PropType } from 'vue';
+import forecast from '@/composables/forecast';
+import { WorthDate } from '@/types';
 
 interface Props {
   selectedItem: WorthDate;

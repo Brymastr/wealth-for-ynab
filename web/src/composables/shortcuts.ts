@@ -1,5 +1,4 @@
 import { reactive } from 'vue';
-import useYnab from './ynab';
 import useSession from './session';
 import useSettings from './settings';
 
@@ -13,7 +12,6 @@ const defaultState: State = {
 
 const state = reactive(defaultState);
 
-const {} = useYnab();
 const {} = useSession();
 const { setBrynab, setDummy } = useSettings();
 

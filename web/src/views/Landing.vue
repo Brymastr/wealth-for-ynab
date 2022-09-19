@@ -37,22 +37,12 @@
           </a>
 
           <a href="https://facebook.github.io/prophet" alt="facebook prophet">
-            <svg
-              class="h-32 w-32 fill-current"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 72.6 72"
-              xml:space="preserve"
-            >
-              <path
-                class="st0"
-                d="M10.2,49.1v-0.1c0-7.6,5.4-13.8,13.3-13.8c1.2,0,2.3,0.2,3.4,0.4l6.2-7.6c-2.8-1.2-6-1.8-9.5-1.8
-	C9.9,26.1,0,36.5,0,49.1v0.1c0,5.2,1.7,10.1,4.7,13.9l6.7-8.3C10.6,53.1,10.2,51.1,10.2,49.1z"
-              />
-              <path
-                class="st0"
-                d="M36.6,46.1c0.2,1,0.3,2,0.3,3v0.1c0,7.6-5.4,13.8-13.3,13.8c-2.3,0-4.3-0.5-6.1-1.5l-7.8,6.3
-	c3.8,2.6,8.5,4.2,13.8,4.2c13.7,0,23.6-10.3,23.6-22.9v-0.1c0-3.5-0.8-6.7-2.1-9.6L36.6,46.1z"
-              />
+            <svg class="h-32 w-32 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72.6 72"
+              xml:space="preserve">
+              <path class="st0" d="M10.2,49.1v-0.1c0-7.6,5.4-13.8,13.3-13.8c1.2,0,2.3,0.2,3.4,0.4l6.2-7.6c-2.8-1.2-6-1.8-9.5-1.8
+	C9.9,26.1,0,36.5,0,49.1v0.1c0,5.2,1.7,10.1,4.7,13.9l6.7-8.3C10.6,53.1,10.2,51.1,10.2,49.1z" />
+              <path class="st0" d="M36.6,46.1c0.2,1,0.3,2,0.3,3v0.1c0,7.6-5.4,13.8-13.3,13.8c-2.3,0-4.3-0.5-6.1-1.5l-7.8,6.3
+	c3.8,2.6,8.5,4.2,13.8,4.2c13.7,0,23.6-10.3,23.6-22.9v-0.1c0-3.5-0.8-6.7-2.1-9.6L36.6,46.1z" />
               <circle class="st0" cx="52.4" cy="20.2" r="6.9" />
               <circle class="st0" cx="68.7" cy="3.9" r="3.9" />
             </svg>
@@ -98,9 +88,9 @@ import BestWorst from '@/components/Stats/BestWorst.vue';
 import NetChange from '@/components/Stats/NetChange.vue';
 import PositiveNegative from '@/components/Stats/PositiveNegative.vue';
 import { getOptions, getChartData } from '@/composables/dummyGraph';
-import useDummy from '@/composables/dummy';
 import Header from '@/components/Landing/Header.vue';
 import WorksWithYnabSvg from '@/assets/works_with_ynab.vue';
+import { useDummyDataApi } from '@/api/DummyDataApi';
 
 export default defineComponent({
   components: {
@@ -112,25 +102,31 @@ export default defineComponent({
     WorksWithYnabSvg,
   },
   setup() {
-    const { loadNetWorth, getNetWorth: data } = useDummy();
 
-    const chartData = ref({});
 
-    const interval = ref(0);
+    function getData() {
+      const data = dummyData.generateNetWorth();
+      return getChartData(data);
+    }
 
     function rebuild() {
-      loadNetWorth();
-      chartData.value = getChartData(data.value);
+      chartData.value = getData()
 
       clearInterval(interval.value);
       interval.value = setInterval(rebuild, 30000);
     }
 
+    const dummyData = useDummyDataApi();
+
+    const chartData = ref(getData());
+
+    const interval = ref(0);
+
     const options = ref(getOptions(rebuild));
 
     rebuild();
 
-    return { options, data, chartData };
+    return { options, data: dummyData.generateNetWorth(), chartData };
   },
 });
 </script>

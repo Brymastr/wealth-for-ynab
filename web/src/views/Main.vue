@@ -2,7 +2,7 @@
   <div class="h-screen">
     <!-- main -->
     <main class="h-full">
-      <router-view class="h-full flex flex-col" v-if="selectedBudgetId"></router-view>
+      <router-view class="h-full flex flex-col"></router-view>
     </main>
 
     <!-- nav -->
@@ -10,17 +10,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 import Nav from '@/components/Nav/Nav.vue';
-import useYnab from '@/composables/ynab';
-
-export default defineComponent({
-  name: 'Main',
-  components: { Nav },
-  setup() {
-    const { selectedBudgetId } = useYnab();
-    return { selectedBudgetId };
-  },
-});
 </script>

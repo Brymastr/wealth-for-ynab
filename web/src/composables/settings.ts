@@ -1,6 +1,7 @@
 import { computed, reactive, readonly } from 'vue';
 import useComposition from './base';
-import useBackend, { BackendType } from './backend';
+import useBackend from './backend';
+import { BackendType } from './types';
 const namespace = 'settings';
 
 const { persist, getModule } = useComposition();

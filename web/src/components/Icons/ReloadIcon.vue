@@ -1,23 +1,13 @@
 <template>
   <div class="icon-parent flex cursor-pointer items-center" @click="action">
-    <p class="pr-1"><slot></slot></p>
-    <svg
-      :id="id"
-      class="block transition-transform duration-200 ease-in-out h-full"
-      :class="[
-        { rotate: rotateClass, ready },
-        { 'w-8': size === 'small', 'w-16': size === 'large', 'w-auto': size === 'auto' },
-      ]"
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      stroke-width="1"
-      stroke="currentColor"
-      fill="none"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
+    <p class="pr-1">
+      <slot></slot>
+    </p>
+    <svg :id="id" class="block transition-transform duration-200 ease-in-out h-full" :class="[
+      { rotate: rotateClass, ready },
+      { 'w-8': size === 'small', 'w-16': size === 'large', 'w-auto': size === 'auto' },
+    ]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="1"
+      stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" />
       <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -5v5h5" />
       <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 5v-5h-5" />
@@ -26,16 +16,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, watch } from 'vue';
+import { defineComponent, onMounted, PropType, watch } from 'vue';
 import { ref } from 'vue';
-
-interface Props {
-  id: string;
-  rotate: boolean;
-  ready: boolean;
-  size?: string;
-  action?: any;
-}
 
 export default defineComponent({
   props: {
@@ -43,11 +25,10 @@ export default defineComponent({
     size: { type: String, default: 'auto' },
     rotate: Boolean,
     ready: Boolean,
-    action: Function,
+    action: { type: Function as PropType<(payload: MouseEvent) => void> },
   },
-  setup(props: Props) {
+  setup(props) {
     const rotateClass = ref<boolean>(props.rotate);
-
     function listener() {
       rotateClass.value = props.rotate;
     }
@@ -80,6 +61,7 @@ export default defineComponent({
   0% {
     transform: rotate(-90deg);
   }
+
   100% {
     transform: rotate(-360deg);
   }
@@ -89,6 +71,7 @@ export default defineComponent({
   from {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(-360deg);
   }

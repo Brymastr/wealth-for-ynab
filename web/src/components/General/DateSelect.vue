@@ -6,13 +6,8 @@
     <div class="parent flex flex-col items-center text-xl leading-tight text-center">
       <!-- start date -->
       <Underline>
-        <select
-          class="cursor-pointer bg-transparent font-thin h-full focus:outline-none"
-          name="date-select-start"
-          id="date-select-start"
-          v-model="selectedStartDate"
-          @change="dateSelected"
-        >
+        <select class="cursor-pointer bg-transparent font-thin h-full focus:outline-none" name="date-select-start"
+          id="date-select-start" v-model="selectedStartDate" @change="dateSelected">
           <option class="bg-gray-800" v-for="date in startDateOptions" :value="date" :key="date">
             {{ formatDate(date) }}
           </option>
@@ -26,13 +21,8 @@
     <!-- end date -->
     <div class="parent flex flex-col items-center text-xl leading-tight">
       <Underline>
-        <select
-          class="cursor-pointer bg-transparent font-thin focus:outline-none"
-          name="date-select-end"
-          id="date-select-end"
-          v-model="selectedEndDate"
-          @change="dateSelected"
-        >
+        <select class="cursor-pointer bg-transparent font-thin focus:outline-none" name="date-select-end"
+          id="date-select-end" v-model="selectedEndDate" @change="dateSelected">
           <option class="bg-gray-800" v-for="date in endDateOptions" :value="date" :key="date">
             {{ formatDate(date) }}
           </option>
@@ -43,12 +33,12 @@
 </template>
 
 <script lang="ts">
-import { isBetween } from '@/services/helper';
+import { formatDate, isBetween } from '@/services/helper';
 import { computed, defineComponent, PropType, ref } from 'vue';
 import { addDays } from 'date-fns';
 import { formatToTimeZone as format } from 'date-fns-timezone';
 import Underline from '@/components/General/Underline.vue';
-import { DateRange } from '@/composables/types';
+import { DateRange } from '@/types';
 
 interface Props {
   dates: string[];
@@ -127,12 +117,12 @@ select {
   background-color: #41526b;
 }
 
-.parent:hover > .underline {
+.parent:hover>.underline {
   width: 100%;
   color: white;
 }
 
-.parent > select {
+.parent>select {
   text-align-last: center;
 }
 </style>

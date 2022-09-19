@@ -1,6 +1,5 @@
 import numeral from 'numeral';
 import { formatToTimeZone } from 'date-fns-timezone';
-import { WorthDate } from '@/composables/types';
 import {
   differenceInHours,
   differenceInMinutes,
@@ -11,6 +10,7 @@ import {
   format,
   getMonth,
 } from 'date-fns';
+import { WorthDate } from '@/types';
 
 export function formatDate(date: string | Date) {
   return format(new Date(date), 'MMM yyyy');
@@ -145,4 +145,8 @@ export function getDiffByMonth(netWorth: WorthDate[]) {
 
 export function wait(ms = 1000) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function getYearMonth(date: string) {
+  return date.substring(0, 7);
 }

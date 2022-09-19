@@ -1,7 +1,7 @@
 import { BLUE } from '../colors';
 import { ChartOptions, ChartData, ChartDataset, TooltipItem, ChartTypeRegistry } from 'chart.js';
 import { formatCurrency } from '@/services/helper';
-import { WorthDate } from '@/composables/types';
+import { WorthDate } from '@/types';
 
 export function getOptions(onClick?: () => void) {
   const options: ChartOptions = {

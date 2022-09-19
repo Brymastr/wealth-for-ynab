@@ -1,28 +1,15 @@
-import { DateRange, LoadingStatus, WorthDate } from './types';
+import { BackendType, LoadingStatus } from './types';
 import useBackend from '@/composables/backend';
-import useDummy from '@/composables/dummy';
-import useYnab from '@/composables/ynab';
 import { createDateList, isBetween } from '@/services/helper';
-import { computed, ComputedRef } from 'vue';
+import { computed } from 'vue';
+import { DateRange } from '@/types';
 
-const { isDummy, isYnab } = useBackend();
+const { activeBackend, activeBackendType } = useBackend();
 
-const forecast = computed(() => {
-  let result: ComputedRef<WorthDate[]> = computed(() => []);
-  if (isYnab.value) {
-    const { getForecast, loadForecast } = useYnab();
-    if (!getForecast.value) loadForecast();
-    result = getForecast;
-  } else if (isDummy.value) {
-    const { getForecast, loadForecast } = useDummy();
-    if (!getForecast.value) loadForecast();
-    result = getForecast;
-  }
-  return result.value;
-});
+const forecast = activeBackend.value.forecast;
 
 const forecastSlice = computed(() => {
-  const data = forecast.value;
+  const data = forecast.value ?? [];
   const start = startDate.value;
   const end = endDate.value;
   if (!start || !end) return [];
@@ -30,91 +17,28 @@ const forecastSlice = computed(() => {
   return filtered;
 });
 
-const reloadText = computed(() => {
-  let text = 'Refresh';
-  if (isDummy.value) {
-    text = 'Randomize Dummy Data';
-  }
-  return text;
-});
+const reloadText = computed(() =>
+  activeBackendType.value === BackendType.dummy ? 'Randomize Dummy Data' : 'Refresh',
+);
 
-const startDate = computed(() => {
-  let result: string;
-  if (isYnab.value) {
-    const { getSelectedForecastStartDate } = useYnab();
-    result = getSelectedForecastStartDate.value ?? '';
-  } else if (isDummy.value) {
-    const { selectedForecastStartDate } = useDummy();
-    result = selectedForecastStartDate.value ?? '';
-  } else {
-    result = 'oopsie';
-  }
-  return result;
-});
+const startDate = activeBackend.value.selectedForecastStartDate;
+const endDate = activeBackend.value.selectedForecastEndDate;
 
-const endDate = computed(() => {
-  let result: string;
-  if (isYnab.value) {
-    const { getSelectedForecastEndDate } = useYnab();
-    result = getSelectedForecastEndDate.value ?? '';
-  } else if (isDummy.value) {
-    const { selectedForecastEndDate } = useDummy();
-    result = selectedForecastEndDate.value ?? '';
-  } else {
-    result = 'oopsie';
-  }
-  return result;
-});
+const loadingStatus = activeBackend.value.loadingForecastStatus;
 
-const loadingStatus = computed(() => {
-  let result: LoadingStatus;
-  if (isYnab.value) {
-    const { state } = useYnab();
-    result = state.loadingForecastStatus;
-  } else if (isDummy.value) {
-    const { state } = useDummy();
-    result = state.loadingForecastStatus;
-  } else {
-    result = LoadingStatus.ready;
-  }
-  return result;
-});
-
-const spinLoadingIcon = computed(() => {
-  let result: boolean;
-  if (isYnab.value) {
-    const { state } = useYnab();
-    result = state.loadingForecastStatus === LoadingStatus.loading;
-  } else if (isDummy.value) {
-    const { state } = useDummy();
-    result = state.loadingForecastStatus === LoadingStatus.loading;
-  } else {
-    result = false;
-  }
-  return result;
-});
+const spinLoadingIcon = computed(
+  () => activeBackend.value.loadingForecastStatus.value === LoadingStatus.loading,
+);
 
 function loadData() {
-  if (isYnab.value) {
-    const { loadForecast } = useYnab();
-    loadForecast();
-  } else if (isDummy.value) {
-    const { loadForecast } = useDummy();
-    loadForecast();
-  }
+  activeBackend.value.loadForecast();
 }
 
 function setDateRange(dateRange: DateRange) {
-  if (isYnab.value) {
-    const { setForecastDateRange } = useYnab();
-    setForecastDateRange(dateRange);
-  } else if (isDummy.value) {
-    const { setForecastDateRange } = useDummy();
-    setForecastDateRange(dateRange);
-  }
+  activeBackend.value.setForecastDateRange(dateRange);
 }
 
-const dateList = computed(() => createDateList(forecast.value));
+const dateList = computed(() => createDateList(forecast.value ?? []));
 
 export default function useForecast() {
   return {

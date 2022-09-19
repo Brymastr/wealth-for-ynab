@@ -1,10 +1,12 @@
 import { computed, reactive, readonly } from 'vue';
-import { verifySession } from '@/api/session';
+import SessionManager from '@/api/SessionManager';
 import useComposition from './base';
 import { isBefore } from '@/services/helper';
 const namespace = 'session';
 
 const { persist, getModule } = useComposition();
+
+const sessionManager = new SessionManager();
 
 interface State {
   token: string | null;
@@ -55,11 +57,9 @@ async function verify() {
   if (!validExpiration) return false;
 
   // check session against server
-  const validToken = await verifySession(token);
-  if (!validToken) return false;
+  const validToken = await sessionManager.verifySession(token);
 
-  // all checks out
-  return true;
+  return validToken;
 }
 
 function clearState() {

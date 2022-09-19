@@ -1,20 +1,16 @@
 <template>
-  <LineGraph
-    chart-id="monthly-net-worth-graph"
-    class="line-graph cursor-pointer"
-    :data="graphData"
-    :options="graphOptions"
-  />
+  <LineGraph chart-id="monthly-net-worth-graph" class="line-graph cursor-pointer" :data="graphData"
+    :options="graphOptions" />
 </template>
 
 <script lang="ts">
-import { WorthDate } from '@/composables/types';
 import LineGraph from '@/components/Graphs/LineGraph.vue';
 import { formatCurrency, formatDate } from '../../services/helper';
 import { ChartData, ChartOptions, ChartDataset, ChartEvent, ActiveElement } from 'chart.js';
 import { BLUE } from '../../colors';
 import { defineComponent } from 'vue';
 import { computed, PropType, ref } from 'vue';
+import { WorthDate } from '@/types';
 
 interface Props {
   netWorth: WorthDate[];
@@ -26,7 +22,7 @@ export default defineComponent({
   components: { LineGraph },
   props: {
     netWorth: {
-      type: Object as PropType<WorthDate[]>,
+      type: Array as PropType<WorthDate[]>,
       required: true,
     },
     changeGraph: {

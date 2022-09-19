@@ -1,21 +1,15 @@
 import { nextTick, ref } from 'vue';
-import useYnab from '@/composables/ynab';
-import useSession from '@/composables/session';
 import router from '@/router';
 
 export type NavPage = 'budgets' | 'settings' | null;
 export type NavVisibility = 'closed' | 'mobile' | 'open';
 
-const { clearState: clearYnabState } = useYnab();
-const { clearState: clearSessionState } = useSession();
 const navPage = ref<NavPage>(null);
 const navVisibility = ref<NavVisibility>('closed');
 let previousNavVisibility: NavVisibility = 'closed';
 
 function logout() {
-  clearYnabState();
-  clearSessionState();
-  nextTick(() => router.replace({ name: 'Landing' }));
+  nextTick(() => router.replace({ name: 'Logout' }));
 }
 
 function openNav() {

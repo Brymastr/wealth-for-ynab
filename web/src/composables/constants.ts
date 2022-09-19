@@ -12,3 +12,5 @@ export const monthLabelsShort = [
   'Nov',
   'Dec',
 ];
+
+export const loadingReadyDelay = 2000;

@@ -1,119 +1,44 @@
-import { DateRange, LoadingStatus, WorthDate } from './types';
+import { computed } from 'vue';
+import { BackendType, LoadingStatus } from './types';
 import useBackend from '@/composables/backend';
-import useDummy from '@/composables/dummy';
-import useYnab from '@/composables/ynab';
-import { computed, ComputedRef } from 'vue';
-import { createDateList, isBetween } from '@/services/helper';
+import { isBetween } from '@/services/helper';
+import { DateRange } from '@/types';
 
-const { isDummy, isYnab } = useBackend();
+const { activeBackend, activeBackendType } = useBackend();
 
-const netWorth = computed(() => {
-  let result: ComputedRef<WorthDate[]> = computed(() => []);
-  if (isYnab.value) {
-    const { getNetWorth } = useYnab();
-    result = getNetWorth;
-  } else if (isDummy.value) {
-    const { getNetWorth, loadNetWorth } = useDummy();
-    if (!getNetWorth.value) loadNetWorth();
-    result = getNetWorth;
-  }
-  return result.value;
-});
+const netWorth = activeBackend.value.netWorth;
+const startDate = activeBackend.value.selectedStartDate;
+const endDate = activeBackend.value.selectedEndDate;
+const dateList = activeBackend.value.dateList;
+const startIndex = activeBackend.value.selectedStartIndex;
+const endIndex = activeBackend.value.selectedEndIndex;
+const loadingStatus = activeBackend.value.loadingNetWorthStatus;
 
 const netWorthSlice = computed(() => {
-  const data = netWorth.value;
+  const data = netWorth.value ?? [];
   const start = startDate.value;
   const end = endDate.value;
   if (!start || !end) return [];
+
   const filtered = data.filter(({ date }) => isBetween(new Date(date), new Date(start), new Date(end)));
   return filtered;
 });
 
-const reloadText = computed(() => {
-  let text = 'Refresh';
-  if (isDummy.value) {
-    text = 'Randomize Dummy Data';
-  }
-  return text;
-});
+const reloadText = computed(() =>
+  activeBackendType.value === BackendType.dummy ? 'Randomize Dummy Data' : 'Refresh',
+);
 
-const startDate = computed(() => {
-  let result: string;
-  if (isYnab.value) {
-    const { getSelectedStartDate } = useYnab();
-    result = getSelectedStartDate.value ?? '';
-  } else if (isDummy.value) {
-    const { selectedStartDate } = useDummy();
-    result = selectedStartDate.value ?? '';
-  } else {
-    result = 'oopsie';
-  }
-  return result;
-});
-
-const endDate = computed(() => {
-  let result: string;
-  if (isYnab.value) {
-    const { getSelectedEndDate } = useYnab();
-    result = getSelectedEndDate.value ?? '';
-  } else if (isDummy.value) {
-    const { selectedEndDate } = useDummy();
-    result = selectedEndDate.value ?? '';
-  } else {
-    result = 'oopsie';
-  }
-  return result;
-});
-
-const loadingStatus = computed(() => {
-  let result: LoadingStatus;
-  if (isYnab.value) {
-    const { state } = useYnab();
-    result = state.loadingNetWorthStatus;
-  } else if (isDummy.value) {
-    const { state } = useDummy();
-    result = state.loadingNetWorthStatus;
-  } else {
-    result = LoadingStatus.ready;
-  }
-  return result;
-});
-
-const spinLoadingIcon = computed(() => {
-  let result: boolean;
-  if (isYnab.value) {
-    const { state } = useYnab();
-    result = state.loadingNetWorthStatus === LoadingStatus.loading;
-  } else if (isDummy.value) {
-    const { state } = useDummy();
-    result = state.loadingNetWorthStatus === LoadingStatus.loading;
-  } else {
-    result = false;
-  }
-  return result;
-});
+const spinLoadingIcon = computed(
+  () => activeBackend.value.loadingNetWorthStatus.value === LoadingStatus.loading,
+);
 
 function loadData() {
-  if (isYnab.value) {
-    const { loadNetWorth } = useYnab();
-    loadNetWorth();
-  } else if (isDummy.value) {
-    const { loadNetWorth } = useDummy();
-    loadNetWorth();
-  }
+  activeBackend.value.loadNetWorth();
 }
 
 function setDateRange(dateRange: DateRange) {
-  if (isYnab.value) {
-    const { setBudgetDateRange } = useYnab();
-    setBudgetDateRange(dateRange);
-  } else if (isDummy.value) {
-    const { setDateRange } = useDummy();
-    setDateRange(dateRange);
-  }
+  activeBackend.value.setBudgetDateRange(dateRange);
 }
-
-const dateList = computed(() => createDateList(netWorth.value));
 
 export default function useNetWorth() {
   return {
@@ -125,6 +50,8 @@ export default function useNetWorth() {
     reloadText,
     startDate,
     endDate,
+    startIndex,
+    endIndex,
     loadingStatus,
     spinLoadingIcon,
   };

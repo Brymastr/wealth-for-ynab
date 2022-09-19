@@ -1,19 +1,14 @@
 <template>
-  <LineGraph
-    chart-id="forecast-graph"
-    class="line-graph cursor-pointer"
-    :data="graphData"
-    :options="graphOptions"
-  />
+  <LineGraph chart-id="forecast-graph" class="line-graph cursor-pointer" :data="graphData" :options="graphOptions" />
 </template>
 
 <script lang="ts">
-import { WorthDate } from '@/composables/types';
 import LineGraph from '@/components/Graphs/LineGraph.vue';
 import { formatCurrency, formatDate } from '@/services/helper';
 import { ChartData, ChartOptions, ChartDataset, ChartEvent, ActiveElement } from 'chart.js';
 import { BLUE } from '@/colors';
 import { computed, PropType, ref, defineComponent } from 'vue';
+import { WorthDate } from '@/types';
 
 interface Props {
   netWorth: WorthDate[];

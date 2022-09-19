@@ -1,6 +1,5 @@
 <template>
-  <nav
-    class="
+  <nav class="
       fixed
       top-0
       w-full
@@ -11,31 +10,29 @@
       text-gray-300
       font-thin
       overflow-y-hidden
-    "
-    :class="navVisibility"
-  >
+    " :class="navVisibility">
     <DesktopNav v-if="width > 640" />
     <MobileNav v-else />
   </nav>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue';
+import { defineComponent, onBeforeUnmount, onMounted, ref } from 'vue';
 import useNav from '@/composables/nav';
-import useYnab from '@/composables/ynab';
 import DesktopNav from '@/components/Nav/Desktop.vue';
 import MobileNav from '@/components/Nav/Mobile.vue';
+import useBackend from '@/composables/backend';
 
 export default defineComponent({
   name: 'Nav',
   components: { DesktopNav, MobileNav },
   setup() {
-    const { state: ynabState } = useYnab();
+    const { activeBackend } = useBackend();
     const { firstUse, navVisibility } = useNav();
 
-    const budgetId = computed(() => ynabState.selectedBudgetId);
-
-    if (budgetId.value === null) firstUse();
+    if (!activeBackend.value.isThereASelectedBudget.value) {
+      firstUse();
+    }
 
     const width = ref<number>(window.innerWidth);
 

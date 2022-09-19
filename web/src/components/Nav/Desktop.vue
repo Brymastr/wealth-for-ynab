@@ -19,38 +19,23 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
 import useNav from '@/composables/nav';
+
+// Components
 import Expanded from '@/components/Nav/Expanded.vue';
 import Title from '@/components/Nav/Title.vue';
 import NavItem from '@/components/Nav/NavTopItem.vue';
-import useYnab from '@/composables/ynab';
+import useBackend from '@/composables/backend';
 
-export default defineComponent({
-  name: 'Desktop',
-  components: { Title, NavItem, Expanded },
-  setup() {
-    const { navPage, goToSettings, goToBudgets, logout } = useNav();
-    const { state: ynabState } = useYnab();
-    const budgetId = computed(() => ynabState.selectedBudgetId);
+const { navPage, goToSettings, goToBudgets, logout } = useNav();
+const { activeBackend } = useBackend()
 
-    const hideTitle = computed(() => navPage.value !== null);
-    const hideLeftSide = computed(() => !budgetId.value);
-    const settingsSelected = computed(() => navPage.value === 'settings');
-    const budgetsSelected = computed(() => navPage.value === 'budgets');
-
-    return {
-      hideTitle,
-      hideLeftSide,
-      settingsSelected,
-      budgetsSelected,
-      goToSettings,
-      goToBudgets,
-      logout,
-    };
-  },
-});
+const hideTitle = computed(() => navPage.value !== null);
+const hideLeftSide = computed(() => !activeBackend.value?.isThereASelectedBudget.value);
+const settingsSelected = computed(() => navPage.value === 'settings');
+const budgetsSelected = computed(() => navPage.value === 'budgets');
 </script>
 
 <style lang="postcss" scoped>
@@ -60,8 +45,9 @@ export default defineComponent({
 }
 
 .links {
+
   /* @apply -mx-1; */
-  > div {
+  >div {
     @apply px-1;
   }
 }

@@ -8,26 +8,20 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { PropType } from 'vue';
+import { WorthDate } from '@/types';
+
+// Components
 import NetChange from '@/components/Stats/NetChange.vue';
 import AverageChange from '@/components/Stats/AverageChange.vue';
 import PositiveNegative from '@/components/Stats/PositiveNegative.vue';
 import BestWorst from '@/components/Stats/BestWorst.vue';
-import { defineComponent, PropType } from 'vue';
-import { WorthDate } from '@/composables/types';
 
-interface Props {
-  netWorth: WorthDate[];
-}
-
-export default defineComponent({
-  name: 'Net Worth Stat',
-  components: { NetChange, AverageChange, PositiveNegative, BestWorst },
-  props: {
-    netWorth: {
-      type: Object as PropType<WorthDate[]>,
-      required: true,
-    },
+defineProps({
+  netWorth: {
+    type: Array as PropType<Array<WorthDate>>,
+    required: true,
   },
-});
+})
 </script>
