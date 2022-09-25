@@ -19,16 +19,10 @@
 
           <!-- mobile signup / login -->
           <div class="sm:hidden text-center w-full mx-auto">
-            <a
-              class="inline-block p-4 mx-5 mb-5 leading-none rounded border border-blue-400 w-11/12"
-              :href="ynabReferral"
-              >Sign up for YNAB</a
-            >
-            <a
-              class="text-gray-800 inline-block p-4 mx-5 leading-none rounded bg-blue-400 w-11/12"
-              href="/login"
-              >Login</a
-            >
+            <a class="inline-block p-4 mx-5 mb-5 leading-none rounded border border-blue-400 w-11/12"
+              :href="ynabReferral">Sign up for YNAB</a>
+            <a class="text-gray-800 inline-block p-4 mx-5 leading-none rounded bg-blue-400 w-11/12"
+              href="/login">Login</a>
           </div>
         </div>
       </header>
@@ -50,8 +44,8 @@
   </section>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue';
+<script setup lang="ts">
+import { computed, PropType } from 'vue';
 import { ChartData, ChartOptions } from 'chart.js';
 import LineGraph from '@/components/Graphs/LineGraph.vue';
 import Logo from '@/components/General/Logo.vue';
@@ -61,23 +55,18 @@ import LoginButton from '@/components/Landing/LoginButton.vue';
 import useSettings from '@/composables/settings';
 import { ynabReferral } from '@/api/constants';
 
-export default defineComponent({
-  components: { LineGraph, Logo, BrynabLogo, Underline, LoginButton },
-  props: {
-    data: {
-      type: Object as PropType<ChartData>,
-      required: true,
-    },
-    options: {
-      type: Object as PropType<ChartOptions>,
-      required: true,
-    },
+defineProps({
+  data: {
+    type: Object as PropType<ChartData>,
+    required: true,
   },
-  setup() {
-    const { state: settings } = useSettings();
-    const brynab = computed(() => settings.brynab);
+  options: {
+    type: Object as PropType<ChartOptions>,
+    required: true,
+  }
+})
 
-    return { ynabReferral, brynab };
-  },
-});
+const { state: settings } = useSettings();
+const brynab = computed(() => settings.brynab);
+
 </script>

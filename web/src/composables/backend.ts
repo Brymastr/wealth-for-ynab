@@ -116,6 +116,13 @@ function clearState() {
   set();
 }
 
+function budgetSelected(budget: Budget) {
+  activeBackend.value.setSelectedBudget(budget);
+  if (activeBackend.value.netWorth.value?.length === 0) {
+    activeBackend.value.loadNetWorth();
+  }
+}
+
 export default function useBackend() {
   return {
     state: readonly(state),
@@ -124,6 +131,7 @@ export default function useBackend() {
     setActiveBackend,
     setActiveBackendToPrevious,
     reset,
+    budgetSelected,
     clearState,
   };
 }

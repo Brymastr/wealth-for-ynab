@@ -1,5 +1,7 @@
 <template>
-  <div class="h-screen"><LoginButton :override="override" /></div>
+  <div class="h-screen">
+    <LoginButton :override="override" />
+  </div>
 </template>
 
 <script lang="ts">

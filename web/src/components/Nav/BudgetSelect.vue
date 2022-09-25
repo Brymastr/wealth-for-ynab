@@ -47,48 +47,29 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue';
 import CircleCheckIcon from '@/components/Icons/CircleCheckIcon.vue';
 import ArrowRightCircleIcon from '@/components/Icons/ArrowRightCircleIcon.vue';
 import { formatDate, dateDifFormat } from '@/services/helper';
-import { computed, defineComponent } from 'vue';
+import { computed } from 'vue';
 import useBackend from '@/composables/backend';
 import { LoadingStatus } from '@/composables/types';
-import { Budget } from '@/types';
 
-export default defineComponent({
-  name: 'Budget Select',
-  components: { ReloadIcon, CircleCheckIcon, ArrowRightCircleIcon },
-  setup(_, { emit }) {
-    const { activeBackend } = useBackend()
+const { activeBackend, budgetSelected } = useBackend()
 
-    if (activeBackend.value.budgets.value.length === 0) activeBackend.value.loadBudgets();
+if (activeBackend.value.budgets.value.length === 0) activeBackend.value.loadBudgets();
 
-    const spinLoadingIcon = computed(
-      () => activeBackend.value.loadingBudgetsStatus.value === LoadingStatus.loading,
-    );
-    const ready = computed(() => activeBackend.value.loadingBudgetsStatus.value === LoadingStatus.ready);
-    const selectedBudgetId = activeBackend.value.selectedBudgetId;
+const spinLoadingIcon = computed(
+  () => activeBackend.value.loadingBudgetsStatus.value === LoadingStatus.loading,
+);
+const ready = computed(() => activeBackend.value.loadingBudgetsStatus.value === LoadingStatus.ready);
+const selectedBudgetId = activeBackend.value.selectedBudgetId;
 
-    // function budgetSelected(budget: Budget) {
-    //   activeBackend.value.setSelectedBudget(budget)
-    //   if()
-    // }
+const emit = defineEmits(['done'])
+const go = () => emit('done')
 
-    return {
-      go: () => {
-        emit('done');
-      },
-      dateDifFormat,
-      loadBudgets: activeBackend.value.loadBudgets.bind(activeBackend.value),
-      budgetSelected: activeBackend.value.setSelectedBudget.bind(activeBackend.value),
-      formatDate,
-      sortedBudgets: activeBackend.value.sortedBudgets,
-      selectedBudgetId,
-      spinLoadingIcon,
-      ready,
-    };
-  },
-});
+const loadBudgets = activeBackend.value.loadBudgets.bind(activeBackend.value)
+const sortedBudgets = activeBackend.value.sortedBudgets
+
 </script>
