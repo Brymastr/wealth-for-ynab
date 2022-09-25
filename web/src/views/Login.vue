@@ -1,40 +1,55 @@
 <template>
-  <div class="h-screen">
-    <LoginButton :override="override" />
+  <div
+    class="h-screen bg-gray-800 text-white text-2xl uppercase whitespace-nowrap flex flex-col text-center justify-center">
+    <span>{{ text }}</span>
   </div>
 </template>
 
-<script lang="ts">
-import LoginButton from '@/components/General/LoginButton.vue';
+<script setup lang="ts">
+import { apiUrl } from '@/api/constants';
 import useSession from '@/composables/session';
-import { defineComponent, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
-export default defineComponent({
-  components: { LoginButton },
-  setup() {
-    const router = useRouter();
-    const route = useRoute();
-    const { setToken, setExpiration } = useSession();
+type LoginStatus = 'pending' | 'loggedIn' | 'loggedOut';
 
-    const override = ref(false);
+const router = useRouter();
+const route = useRoute();
+const { setToken, setExpiration } = useSession();
 
-    function loggedIn(sessionToken: string, sessionExpiration: number) {
-      setToken(sessionToken);
-      setExpiration(sessionExpiration);
-
-      setTimeout(() => router.push('/app'), 1500);
-    }
-
-    onMounted(async () => {
-      const { sessionToken, sessionExpiration } = route.query;
-      if (typeof sessionToken === 'string' && typeof sessionExpiration === 'string') {
-        override.value = true;
-        loggedIn(sessionToken, parseInt(sessionExpiration));
-      }
-    });
-
-    return { override };
-  },
+const loginStatus = ref<LoginStatus>('loggedOut');
+const text = computed(() => {
+  switch (loginStatus.value) {
+    case 'loggedIn': return 'Success!'
+    case 'loggedOut':
+    default: return 'Logging in...'
+  }
 });
+
+const override = ref(false);
+
+function loggedIn(sessionToken: string, sessionExpiration: number) {
+  setToken(sessionToken);
+  setExpiration(sessionExpiration);
+  loginStatus.value = 'loggedIn'
+
+  setTimeout(() => router.push('/app'), 1500);
+}
+
+function ynabLogin() {
+  const url = `${apiUrl}/auth/ynab/login`;
+  loginStatus.value = 'pending';
+  location.replace(url);
+}
+
+onMounted(async () => {
+  const { sessionToken, sessionExpiration } = route.query;
+  if (typeof sessionToken === 'string' && typeof sessionExpiration === 'string') {
+    override.value = true;
+    loggedIn(sessionToken, parseInt(sessionExpiration));
+  } else {
+    setTimeout(ynabLogin, 1000);
+  }
+});
+
 </script>
