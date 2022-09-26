@@ -1,120 +1,171 @@
 <template>
-  <div class="flex h-header items-center">
-    <datalist id="dates">
-      <option v-for="item in dates" :key=" item"></option>
-    </datalist>
-    <div class="slider-wrapper flex flex-col items-center text-xl leading-tight text-center w-full">
-      <input type="range" list="dates" class="w-full" v-model="startIndex" :max="dates.length - 1">
-      <input type="range" list="dates" class="w-full" v-model="endIndex" :max="dates.length - 1">
-
-      {{startIndex}}
-      {{endIndex}}
+  <div class="h-32 flex flex-col">
+    <div class="slider-and-buttons flex h-8">
+      <div class="w-12"></div>
+      <div id="slider" ref="slider" class="relative bg-gray-500 h-2 mt-3 w-full">
+        <DateSliderThumb id="left-slider-item" ref="sliderItemLeft" side="left" :position="pip1Position"
+          :text="pip1Date" />
+        <DateSliderThumb id="right-slider-item" ref="sliderItemRight" side="right" :position="pip2Position"
+          :text="pip2Date" />
+        <div class="z-10 absolute bg-blue-400 h-full" :style="{left: `${pip1Position}px`, width: `${middleWidth}px`}">
+        </div>
+      </div>
+      <div class="w-12"></div>
+      <div class="self-center mx-1 ml-2 bg-blue-400 rounded-full px-2 cursor-pointer hover:bg-gray-700"
+        @click="setMonths(3)">3M</div>
+      <div class="self-center mx-1 bg-blue-400 rounded-full px-2 cursor-pointer hover:bg-gray-700"
+        @click="setMonths(6)">6M</div>
+      <div class="self-center mx-1 bg-blue-400 rounded-full px-2 cursor-pointer hover:bg-gray-700"
+        @click="setMonths(12)">1Y</div>
+      <div class="self-center mx-1 bg-blue-400 rounded-full px-2 cursor-pointer hover:bg-gray-700 whitespace-nowrap"
+        @click="setMonths()">All Time</div>
     </div>
+
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { getYearMonth } from '@/services/helper';
 import { DateRange } from '@/types';
-import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
+import { computed, onMounted, PropType, ref, watch } from 'vue';
+import DateSliderThumb from './DateSliderThumb.vue';
 
-interface Props {
-  dates: string[];
-  selectedStartIndex: number;
-  selectedEndIndex: number;
+const props = defineProps({
+  dates: { type: Array as PropType<string[]>, default: () => [] },
+  selectedStartIndex: { type: Number, required: true },
+  selectedEndIndex: { type: Number, required: true },
+})
+
+const emit = defineEmits(['dateSelected'])
+
+const startIndex = ref(props.selectedStartIndex)
+const endIndex = ref(props.selectedEndIndex)
+const minMonths = 3
+watch(() => startIndex, dateSelected)
+watch(() => endIndex, dateSelected)
+
+function dateSelected() {
+  console.log('dateSelected')
+  const dateRange: DateRange = {
+    startDate: props.dates[startIndex.value],
+    endDate: props.dates[endIndex.value],
+  };
+  emit('dateSelected', dateRange);
 }
 
-export default defineComponent({
-  name: 'Date Select',
-  components: {},
-  props: {
-    dates: { type: Array as PropType<string[]>, default: () => [] },
-    selectedStartIndex: { type: Number, required: true },
-    selectedEndIndex: { type: Number, required: true },
-  },
-  setup(props: Props, { emit }) {
+const clientWidth = ref(document.querySelector('html')?.clientWidth)
+const slider = ref<HTMLElement | null>(null)
+const sliderWidth = ref(1000) // 1145
+const sliderLeft = ref(0) // 192 + 45 = 237
+let selectedItem: HTMLElement | null
 
-    const startIndex = ref(props.selectedStartIndex)
-    const endIndex = ref(props.selectedEndIndex)
+const sliderItemLeft = ref<{ thumb: HTMLElement } | null>(null)
+const sliderItemRight = ref<{ thumb: HTMLElement } | null>(null)
 
-    function dateSelected() {
-      const dateRange: DateRange = {
-        startDate: props.dates[startIndex.value],
-        endDate: props.dates[endIndex.value],
-      };
-      emit('dateSelected', dateRange);
+const pip1Position = computed(() => calculatePosition(startIndex.value))
+const pip1Date = computed(() => getYearMonth(props.dates[startIndex.value]))
+const pip2Position = computed(() => calculatePosition(endIndex.value))
+const pip2Date = computed(() => getYearMonth(props.dates[endIndex.value]))
+const middleWidth = computed(() => pip2Position.value - pip1Position.value)
+
+let allowMove = true
+let allowResize = true
+
+function dragStart(event: MouseEvent) {
+  event.preventDefault();
+  selectedItem = event.target as HTMLElement
+  const parent = sliderItemRight.value?.thumb.parentElement as HTMLElement
+  clientWidth.value = document.querySelector('html')?.clientWidth as number
+  sliderWidth.value = parent.offsetWidth
+  sliderLeft.value = parent.offsetLeft
+
+  document.onmouseup = closeDragElement;
+  document.onmousemove = elementDrag;
+}
+
+function calculateIndex(clientX: number): number {
+  const x = clientX - sliderLeft.value
+  const items = props.dates.length
+  const itemSize = sliderWidth.value / items
+  if (x <= 0) return 0
+  else if (x >= sliderWidth.value - itemSize) return items - 1
+  const rounded = Math.round((x) / itemSize) * itemSize
+  const index = Math.round(rounded / itemSize)
+  return index
+}
+
+function calculatePosition(index: number) {
+  const items = props.dates.length
+  if (index >= items - 1) index = items - 1
+  const itemSize = sliderWidth.value / items
+  return (index) * itemSize
+}
+
+function elementDrag(event: MouseEvent) {
+  event.preventDefault()
+  if (!allowMove) return
+  allowMove = false
+  setTimeout(() => allowMove = true, 30)
+
+  const index = calculateIndex(event.clientX)
+
+  if (selectedItem?.id === 'left-slider-item') {
+    if (index < endIndex.value - minMonths) {
+      if (index !== startIndex.value) {
+        startIndex.value = index
+        dateSelected()
+      }
     }
+  } else if (selectedItem?.id === 'right-slider-item') {
+    if (index > startIndex.value + minMonths) {
+      if (index !== endIndex.value) {
+        endIndex.value = index
+        dateSelected()
+      }
 
-    watch(() => startIndex, dateSelected)
-    watch(() => endIndex, dateSelected)
+    }
+  }
+}
 
-    return {
-      getYearMonth,
-      startIndex,
-      endIndex,
-    };
-  },
-});
+function closeDragElement() {
+  // stop moving when mouse button is released:
+  document.onmouseup = null;
+  document.onmousemove = null;
+  selectedItem = null
+}
+
+function onResize() {
+  if (!allowResize) return
+  allowResize = false
+  setTimeout(() => allowResize = true, 100)
+
+  sliderWidth.value = slider.value?.offsetWidth as number
+  sliderLeft.value = slider.value?.offsetLeft as number
+}
+
+onMounted(() => {
+  if (sliderItemRight.value !== null) {
+    sliderItemRight.value.thumb.onmousedown = dragStart
+  }
+  if (sliderItemLeft.value !== null) {
+    sliderItemLeft.value.thumb.onmousedown = dragStart
+  }
+
+  sliderWidth.value = slider.value?.offsetWidth as number
+  sliderLeft.value = slider.value?.offsetLeft as number
+
+  window.addEventListener('resize', onResize);
+})
+
+function setMonths(months?: number) {
+  if (months === undefined) {
+    startIndex.value = 0
+    endIndex.value = props.dates.length - 1
+  } else {
+    startIndex.value = props.dates.length - months - 1
+    endIndex.value = props.dates.length - 1
+  }
+}
+
+
 </script>
-
-<style lang="css" scoped>
-.slider-wrapper {
-  width: 300px;
-  margin: auto;
-  text-align: center;
-  position: relative;
-  height: 6em;
-}
-
-.slider-wrapper input[type=range] {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-}
-
-input[type=range] {
-  -webkit-appearance: none;
-  width: 100%;
-}
-
-input[type=range]:focus {
-  outline: none;
-}
-
-input[type=range]:focus::-webkit-slider-runnable-track {
-  background: #2497e3;
-}
-
-input[type=range]:focus::-ms-fill-lower {
-  background: #2497e3;
-}
-
-input[type=range]:focus::-ms-fill-upper {
-  background: #2497e3;
-}
-
-input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 5px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: #2497e3;
-  border-radius: 1px;
-  box-shadow: none;
-  border: 0;
-}
-
-input[type=range]::-webkit-slider-thumb {
-  z-index: 2;
-  position: relative;
-  box-shadow: 0px 0px 0px #000;
-  border: 1px solid #2497e3;
-  height: 18px;
-  width: 18px;
-  border-radius: 25px;
-  background: #a1d0ff;
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -7px;
-}
-</style>

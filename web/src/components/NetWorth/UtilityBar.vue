@@ -6,40 +6,29 @@
         :action="loadData" size="small">{{ spinLoadingIcon ? 'Loading...' : reloadText }}</ReloadIcon>
     </div>
 
-    <!-- <div class="bg-gray-300 ">
-      <div class="xl:container mx-auto">
-        <DateSlider :dates="dateList" :selectedStartIndex="startIndex" :selectedEndIndex="endIndex"
-          @dateSelected="dateSelected" />
-      </div>
-    </div> -->
+    <div class="xl:container mx-auto bg-gray-200">
+      <DateSlider :dates="dateList" :selectedStartIndex="startIndex" :selectedEndIndex="endIndex"
+        @dateSelected="dateSelected" />
+    </div>
 
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref } from 'vue';
-import useNetWorth from '@/composables/netWorth';
+import { computed, PropType } from 'vue';
 import { DateRange } from '@/types';
 import useBackend from '@/composables/backend';
 import { LoadingStatus } from '@/composables/types';
+import useNetWorth from '@/composables/netWorth';
 import DateSelect from '@/components/General/DateSelect.vue';
 import DateSlider from '@/components/General/DateSlider.vue';
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue';
 
-const props = defineProps({
-  dateList: {
-    type: Array as PropType<string[]>,
-    required: true
-  },
-  startIndex: {
-    type: Number,
-    required: true
-  },
-  endIndex: {
-    type: Number,
-    required: true
-  },
-})
+const props = defineProps<{
+  dateList: string[]
+  startIndex: number
+  endIndex: number
+}>()
 
 const startDate = computed(() => props.dateList[props.startIndex])
 const endDate = computed(() => props.dateList[props.endIndex])

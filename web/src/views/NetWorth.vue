@@ -11,7 +11,7 @@
       :endIndex="(endIndex as number)" />
 
     <!-- main section -->
-    <NetWorthMainSection v-if="ready" :netWorth="(netWorth as WorthDate[])" />
+    <!-- <NetWorthMainSection v-if="ready" :netWorth="(netWorth as WorthDate[])" /> -->
 
   </div>
 </template>
@@ -29,7 +29,6 @@ import NetWorthUtilityBar from '@/components/NetWorth/UtilityBar.vue';
 import NetWorthMainSection from '@/components/NetWorth/MainSection.vue';
 import HeaderFix from '@/components/General/HeaderFix.vue'
 import useNetWorth from '@/composables/netWorth';
-import { WorthDate } from '@/types';
 
 const { activeBackend, setActiveBackend } = useBackend()
 
