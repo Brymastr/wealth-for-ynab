@@ -23,6 +23,8 @@ const reloadText = computed(() =>
 
 const startDate = activeBackend.value.selectedForecastStartDate;
 const endDate = activeBackend.value.selectedForecastEndDate;
+const startIndex = activeBackend.value.selectedForecastStartIndex;
+const endIndex = activeBackend.value.selectedForecastEndIndex;
 
 const loadingStatus = activeBackend.value.loadingForecastStatus;
 
@@ -48,6 +50,8 @@ export default function useForecast() {
     forecast,
     forecastSlice,
     reloadText,
+    startIndex,
+    endIndex,
     startDate,
     endDate,
     loadingStatus,

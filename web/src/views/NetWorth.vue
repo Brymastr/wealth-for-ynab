@@ -11,7 +11,7 @@
       :endIndex="(endIndex as number)" />
 
     <!-- main section -->
-    <!-- <NetWorthMainSection v-if="ready" :netWorth="(netWorth as WorthDate[])" /> -->
+    <NetWorthMainSection v-if="ready" :netWorth="netWorthSlice" />
 
   </div>
 </template>
@@ -29,6 +29,7 @@ import NetWorthUtilityBar from '@/components/NetWorth/UtilityBar.vue';
 import NetWorthMainSection from '@/components/NetWorth/MainSection.vue';
 import HeaderFix from '@/components/General/HeaderFix.vue'
 import useNetWorth from '@/composables/netWorth';
+import { WorthDate } from '@/types';
 
 const { activeBackend, setActiveBackend } = useBackend()
 
@@ -38,11 +39,11 @@ if (activeBackend.value.name === undefined) {
 
 const isBudgetSelected = activeBackend.value.isThereASelectedBudget
 
-const { netWorth, dateList, startIndex, endIndex } = useNetWorth()
+const { netWorthSlice, dateList, startIndex, endIndex } = useNetWorth()
 
-const netWorthLength = computed(() => netWorth.value && netWorth.value.length)
+const netWorthLength = computed(() => netWorthSlice.value.length)
 
 if (netWorthLength.value === 0) activeBackend.value.loadNetWorth()
 
-const ready = computed(() => isBudgetSelected.value && netWorth.value !== undefined && netWorth.value.length > 0);
+const ready = computed(() => isBudgetSelected.value && netWorthSlice.value !== undefined && netWorthSlice.value.length > 0);
 </script>

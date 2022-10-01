@@ -7,30 +7,40 @@ import { YnabBackend } from './YnabBackend';
 const namespace = 'backend';
 
 export interface IBackend {
+  // base
   name: BackendType;
+  loadingBudgetsStatus: ComputedRef<LoadingStatus>;
+  loadingNetWorthStatus: ComputedRef<LoadingStatus>;
+  loadingForecastStatus: ComputedRef<LoadingStatus>;
   loadBudgets(): Promise<void>;
   loadNetWorth(): Promise<void>;
   loadForecast(): Promise<void>;
-  setSelectedBudget(budget: Budget): void;
+
+  // budgets
   budgets: ComputedRef<Budget[]>;
+  sortedBudgets: ComputedRef<Budget[] | undefined>;
   isThereASelectedBudget: ComputedRef<boolean>;
   selectedBudgetId: ComputedRef<string | null>;
   selectedBudgetName: ComputedRef<string | undefined>;
+  setSelectedBudget(budget: Budget): void;
+
+  // data
   dateList: ComputedRef<string[] | undefined>;
   netWorth: ComputedRef<WorthDate[] | undefined>;
   forecast: ComputedRef<WorthDate[] | undefined>;
+
+  // dates
   selectedStartDate: ComputedRef<string | undefined>;
   selectedEndDate: ComputedRef<string | undefined>;
   selectedStartIndex: ComputedRef<number | undefined>;
   selectedEndIndex: ComputedRef<number | undefined>;
   selectedForecastStartDate: ComputedRef<string | undefined>;
   selectedForecastEndDate: ComputedRef<string | undefined>;
-  sortedBudgets: ComputedRef<Budget[] | undefined>;
-  loadingBudgetsStatus: ComputedRef<LoadingStatus>;
-  loadingNetWorthStatus: ComputedRef<LoadingStatus>;
-  loadingForecastStatus: ComputedRef<LoadingStatus>;
+  selectedForecastStartIndex: ComputedRef<number | undefined>;
+  selectedForecastEndIndex: ComputedRef<number | undefined>;
   setBudgetDateRange(dateRange: DateRange): void;
   setForecastDateRange(dateRange: DateRange): void;
+
   clearState(): void;
   reset(): void;
 }

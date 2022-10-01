@@ -10,6 +10,7 @@
       text-gray-300
       font-thin
       overflow-y-hidden
+      z-30
     " :class="navVisibility">
     <DesktopNav v-if="width > 640" />
     <MobileNav v-else />

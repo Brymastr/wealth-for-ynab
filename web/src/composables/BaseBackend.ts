@@ -98,16 +98,22 @@ export default class BaseBackend {
   public dateList = computed(() => this.budget.value?.dateList);
   public netWorth = computed(() => this.budget.value?.monthlyNetWorth);
   public forecast = computed(() => this.budget.value?.forecast);
-  public selectedStartDate = computed(() => this.budget.value?.selectedStartDate);
-  public selectedEndDate = computed(() => this.budget.value?.selectedEndDate);
   public selectedStartIndex = computed(() =>
     this.dateList.value?.indexOf(this.selectedStartDate.value as string),
   );
   public selectedEndIndex = computed(() =>
     this.dateList.value?.indexOf(this.selectedEndDate.value as string),
   );
+  public selectedStartDate = computed(() => this.budget.value?.selectedStartDate);
+  public selectedEndDate = computed(() => this.budget.value?.selectedEndDate);
   public selectedForecastStartDate = computed(() => this.budget.value?.selectedForecastStartDate);
   public selectedForecastEndDate = computed(() => this.budget.value?.selectedForecastEndDate);
+  public selectedForecastStartIndex = computed(() =>
+    this.dateList.value?.indexOf(this.selectedForecastStartDate.value as string),
+  );
+  public selectedForecastEndIndex = computed(() =>
+    this.dateList.value?.indexOf(this.selectedForecastEndDate.value as string),
+  );
   public sortedBudgets = computed(() =>
     this.budgets.value?.sort((a, b) => {
       const aDate = new Date(a.lastModified ?? '');

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-32 flex flex-col">
+  <div class="h-10 flex flex-col">
     <div class="slider-and-buttons flex h-8">
       <div class="w-12"></div>
       <div id="slider" ref="slider" class="relative bg-gray-500 h-2 mt-3 w-full">
@@ -20,20 +20,20 @@
       <div class="self-center mx-1 bg-blue-400 rounded-full px-2 cursor-pointer hover:bg-gray-700 whitespace-nowrap"
         @click="setMonths()">All Time</div>
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
 import { getYearMonth } from '@/services/helper';
 import { DateRange } from '@/types';
-import { computed, onMounted, PropType, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, PropType, ref, watch } from 'vue';
 import DateSliderThumb from './DateSliderThumb.vue';
 
 const props = defineProps({
   dates: { type: Array as PropType<string[]>, default: () => [] },
   selectedStartIndex: { type: Number, required: true },
   selectedEndIndex: { type: Number, required: true },
+  visible: { type: Boolean, default: () => false }
 })
 
 const emit = defineEmits(['dateSelected'])
@@ -41,8 +41,9 @@ const emit = defineEmits(['dateSelected'])
 const startIndex = ref(props.selectedStartIndex)
 const endIndex = ref(props.selectedEndIndex)
 const minMonths = 3
-watch(() => startIndex, dateSelected)
-watch(() => endIndex, dateSelected)
+watch([startIndex, endIndex], dateSelected)
+watch(() => props.visible, (newVisibility) =>
+  newVisibility && nextTick(setWidth), { flush: 'post', })
 
 function dateSelected() {
   console.log('dateSelected')
@@ -134,16 +135,20 @@ function closeDragElement() {
   selectedItem = null
 }
 
+function setWidth() {
+  sliderWidth.value = slider.value?.offsetWidth as number
+  sliderLeft.value = slider.value?.offsetLeft as number
+}
+
 function onResize() {
   if (!allowResize) return
   allowResize = false
   setTimeout(() => allowResize = true, 100)
 
-  sliderWidth.value = slider.value?.offsetWidth as number
-  sliderLeft.value = slider.value?.offsetLeft as number
+  setWidth()
 }
 
-onMounted(() => {
+function start() {
   if (sliderItemRight.value !== null) {
     sliderItemRight.value.thumb.onmousedown = dragStart
   }
@@ -151,11 +156,14 @@ onMounted(() => {
     sliderItemLeft.value.thumb.onmousedown = dragStart
   }
 
-  sliderWidth.value = slider.value?.offsetWidth as number
-  sliderLeft.value = slider.value?.offsetLeft as number
+  console.log(slider.value)
+
+  setWidth()
 
   window.addEventListener('resize', onResize);
-})
+}
+
+onMounted(start)
 
 function setMonths(months?: number) {
   if (months === undefined) {
