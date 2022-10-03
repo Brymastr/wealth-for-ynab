@@ -62,10 +62,6 @@ function dateSelected() {
     endDate: props.dates[endIndex.value],
   };
 
-  pips.value?.style.padding
-
-  console.log(endIndex.value, dateRange.endDate)
-
   emit('dateSelected', dateRange);
 }
 
