@@ -1,24 +1,34 @@
 <template>
-  <div class="h-10 flex flex-col">
-    <div class="slider-and-buttons flex h-8">
-      <div class="w-12"></div>
-      <div id="slider" ref="slider" class="relative bg-gray-500 h-2 mt-3 w-full">
-        <DateSliderThumb id="left-slider-item" ref="sliderItemLeft" side="left" :position="pip1Position"
-          :text="pip1Date" />
-        <DateSliderThumb id="right-slider-item" ref="sliderItemRight" side="right" :position="pip2Position"
-          :text="pip2Date" />
-        <div class="z-10 absolute bg-blue-400 h-full" :style="{left: `${pip1Position}px`, width: `${middleWidth}px`}">
+  <div class="slider-grid mt-3">
+    <div class="slider w-full flex flex-col justify-center relative" ref="slider">
+      <div class="h-2 bg-gray-500"></div>
+      <div class="absolute bg-blue-400 h-2" :style="{left: `${thumb1Position}px`, width: `${middleWidth}px`}">
+      </div>
+      <DateSliderThumb id="left-slider-item" ref="sliderItemLeft" side="left" :position="thumb1Position"
+        :text="thumb1Date" />
+      <DateSliderThumb id="right-slider-item" ref="sliderItemRight" side="right" :position="thumb2Position"
+        :text="thumb2Date" />
+    </div>
+    <div class="buttons flex items-center whitespace-nowrap">
+      <div class="mx-1 px-2 bg-blue-400 rounded-full cursor-pointer hover:bg-gray-700" @click="setMonths(3)">3M
+      </div>
+      <div class="mx-1 px-2 bg-blue-400 rounded-full cursor-pointer hover:bg-gray-700" @click="setMonths(6)">6M</div>
+      <div class="mx-1 px-2 bg-blue-400 rounded-full cursor-pointer hover:bg-gray-700" @click="setMonths(12)">1Y</div>
+      <div class="mx-1 px-2 bg-blue-400 rounded-full cursor-pointer hover:bg-gray-700" @click="setMonths()">All Time
+      </div>
+    </div>
+    <div class="pips text-gray-700 flex flex-col" ref="pips">
+      <div class="h-3 flex justify-between w-full">
+        <div class="border-r-2 border-gray-500 h-1 transition-height" v-for="date, index in dates" :key="date"
+          :class="{'h-full': highlightPip(index)}"></div>
+      </div>
+      <div class="h-full w-full relative">
+        <div class="date-pips absolute flex justify-between"
+          :style="{width: `calc(${sliderWidth}px + 3rem)`, left: '-1.5rem'}">
+          <div class="h-full text-center whitespace-nowrap text-xs" v-for="date, index in dates" :key="date"
+            v-show="showPipDate(index)" :class="{'font-bold': highlightPip(index)}">{{getYearMonth(date)}}</div>
         </div>
       </div>
-      <div class="w-12"></div>
-      <div class="self-center mx-1 ml-2 bg-blue-400 rounded-full px-2 cursor-pointer hover:bg-gray-700"
-        @click="setMonths(3)">3M</div>
-      <div class="self-center mx-1 bg-blue-400 rounded-full px-2 cursor-pointer hover:bg-gray-700"
-        @click="setMonths(6)">6M</div>
-      <div class="self-center mx-1 bg-blue-400 rounded-full px-2 cursor-pointer hover:bg-gray-700"
-        @click="setMonths(12)">1Y</div>
-      <div class="self-center mx-1 bg-blue-400 rounded-full px-2 cursor-pointer hover:bg-gray-700 whitespace-nowrap"
-        @click="setMonths()">All Time</div>
     </div>
   </div>
 </template>
@@ -38,36 +48,42 @@ const props = defineProps({
 
 const emit = defineEmits(['dateSelected'])
 
+const pips = ref<HTMLElement | null>()
 const startIndex = ref(props.selectedStartIndex)
 const endIndex = ref(props.selectedEndIndex)
-const minMonths = 3
+const minMonths = 2
 watch([startIndex, endIndex], dateSelected)
 watch(() => props.visible, (newVisibility) =>
   newVisibility && nextTick(setWidth), { flush: 'post', })
 
 function dateSelected() {
-  console.log('dateSelected')
   const dateRange: DateRange = {
     startDate: props.dates[startIndex.value],
     endDate: props.dates[endIndex.value],
   };
+
+  pips.value?.style.padding
+
+  console.log(endIndex.value, dateRange.endDate)
+
   emit('dateSelected', dateRange);
 }
 
 const clientWidth = ref(document.querySelector('html')?.clientWidth)
 const slider = ref<HTMLElement | null>(null)
-const sliderWidth = ref(1000) // 1145
-const sliderLeft = ref(0) // 192 + 45 = 237
+const sliderWidth = ref(0)
+const sliderLeft = ref(0)
 let selectedItem: HTMLElement | null
 
 const sliderItemLeft = ref<{ thumb: HTMLElement } | null>(null)
 const sliderItemRight = ref<{ thumb: HTMLElement } | null>(null)
 
-const pip1Position = computed(() => calculatePosition(startIndex.value))
-const pip1Date = computed(() => getYearMonth(props.dates[startIndex.value]))
-const pip2Position = computed(() => calculatePosition(endIndex.value))
-const pip2Date = computed(() => getYearMonth(props.dates[endIndex.value]))
-const middleWidth = computed(() => pip2Position.value - pip1Position.value)
+const thumb1Position = computed(() => calculatePosition(startIndex.value))
+const thumb1Date = computed(() => getYearMonth(props.dates[startIndex.value]))
+const thumb2Position = computed(() => calculatePosition(endIndex.value))
+const thumb2Date = computed(() => getYearMonth(props.dates[endIndex.value]))
+const middleWidth = computed(() => thumb2Position.value - thumb1Position.value)
+
 
 let allowMove = true
 let allowResize = true
@@ -87,19 +103,19 @@ function dragStart(event: MouseEvent) {
 function calculateIndex(clientX: number): number {
   const x = clientX - sliderLeft.value
   const items = props.dates.length
-  const itemSize = sliderWidth.value / items
+  const itemSize = sliderWidth.value / (items - 1)
   if (x <= 0) return 0
-  else if (x >= sliderWidth.value - itemSize) return items - 1
+  else if (x >= sliderWidth.value - 1) return items - 1
   const rounded = Math.round((x) / itemSize) * itemSize
   const index = Math.round(rounded / itemSize)
+  if (index > items - 1) return items - 1
   return index
 }
 
 function calculatePosition(index: number) {
   const items = props.dates.length
-  if (index >= items - 1) index = items - 1
-  const itemSize = sliderWidth.value / items
-  return (index) * itemSize
+  const itemSize = sliderWidth.value / (items - 1)
+  return index * itemSize
 }
 
 function elementDrag(event: MouseEvent) {
@@ -114,14 +130,12 @@ function elementDrag(event: MouseEvent) {
     if (index < endIndex.value - minMonths) {
       if (index !== startIndex.value) {
         startIndex.value = index
-        dateSelected()
       }
     }
   } else if (selectedItem?.id === 'right-slider-item') {
     if (index > startIndex.value + minMonths) {
       if (index !== endIndex.value) {
         endIndex.value = index
-        dateSelected()
       }
 
     }
@@ -156,8 +170,6 @@ function start() {
     sliderItemLeft.value.thumb.onmousedown = dragStart
   }
 
-  console.log(slider.value)
-
   setWidth()
 
   window.addEventListener('resize', onResize);
@@ -175,5 +187,52 @@ function setMonths(months?: number) {
   }
 }
 
+function highlightPip(index: number) {
+  return index === startIndex.value || index === endIndex.value
+}
 
+function showPipDate(index: number) {
+  const items = props.dates.length
+  const even = items % 2 === 0
+  let show = false
+  if (index === 0 || index === items - 1) show = true
+  show = (index) % 10 === 0
+
+  return show
+}
 </script>
+
+<style lang="postcss" scoped>
+.slider-grid {
+  display: grid;
+  grid-template-columns: 2rem auto 2.6rem min-content;
+  grid-template-rows: 2rem 2rem;
+  grid-template-areas:
+    ". slider . buttons"
+    ". pips . .";
+}
+
+.space {
+  grid-area: space;
+}
+
+.slider {
+  grid-area: slider;
+}
+
+.buttons {
+  grid-area: buttons;
+}
+
+.pips {
+  grid-area: pips;
+}
+
+.date-pips {
+  flex: 1 1 0;
+
+  >div {
+    width: 3rem
+  }
+}
+</style>

@@ -29,7 +29,6 @@ import NetWorthUtilityBar from '@/components/NetWorth/UtilityBar.vue';
 import NetWorthMainSection from '@/components/NetWorth/MainSection.vue';
 import HeaderFix from '@/components/General/HeaderFix.vue'
 import useNetWorth from '@/composables/netWorth';
-import { WorthDate } from '@/types';
 
 const { activeBackend, setActiveBackend } = useBackend()
 
@@ -43,7 +42,7 @@ const { netWorthSlice, dateList, startIndex, endIndex } = useNetWorth()
 
 const netWorthLength = computed(() => netWorthSlice.value.length)
 
-if (netWorthLength.value === 0) activeBackend.value.loadNetWorth()
+if (netWorthLength.value === 0 && isBudgetSelected.value) activeBackend.value.loadNetWorth()
 
 const ready = computed(() => isBudgetSelected.value && netWorthSlice.value !== undefined && netWorthSlice.value.length > 0);
 </script>

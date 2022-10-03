@@ -1,6 +1,6 @@
 <template>
-  <div class="text-white bg-gray-300 px-3 xl:px-0">
-    <div class="bg-blue-400 h-header">
+  <div class="text-white bg-gray-300">
+    <div class="bg-blue-400 h-header px-3 xl:px-0">
       <div class="xl:container mx-auto flex justify-between items-center">
         <DateRangeComponent :dateList="dateList" :startIndex="startIndex" :endIndex="endIndex"
           @dateSelected="dateSelected" @click="toggleSlider()" />
@@ -9,7 +9,7 @@
       </div>
     </div>
 
-    <div class="xl:container mx-auto" v-show="sliderVisible">
+    <div class="xl:container mx-auto px-3 xl:px-0" v-show="sliderVisible">
       <DateSlider :dates="dateList" :selectedStartIndex="startIndex" :selectedEndIndex="endIndex"
         @dateSelected="dateSelected" :visible="sliderVisible" />
     </div>
