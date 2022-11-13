@@ -19,13 +19,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { DateRange, DateRangeIndices } from '@/types';
+import { DateRangeIndices } from '@/types';
 import useBackend from '@/composables/backend';
 import { LoadingStatus } from '@/composables/types';
-import useNetWorth from '@/composables/netWorth';
 import DateRangeComponent from '@/components/General/DateRange.vue';
 import DateSlider from '@/components/General/DateSlider/DateSlider.vue';
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue';
+import useForecast from '@/composables/forecast';
 
 defineProps<{
   dateList: string[]
@@ -33,12 +33,13 @@ defineProps<{
   endIndex: number
 }>()
 
+const emit = defineEmits(['dateSelected'])
+
 const {
   loadData,
   reloadText,
   spinLoadingIcon,
-  setDateRange,
-} = useNetWorth();
+} = useForecast();
 
 const sliderVisible = ref(false)
 function toggleSlider() {
@@ -46,8 +47,8 @@ function toggleSlider() {
 }
 
 const { activeBackend } = useBackend()
-const ready = computed(() => activeBackend.value.loadingNetWorthStatus.value === LoadingStatus.ready)
+const ready = computed(() => activeBackend.value.loadingForecastStatus.value === LoadingStatus.ready)
 
-const dateSelected = (dateRange: DateRangeIndices) => setDateRange(dateRange)
+const dateSelected = (dateRange: DateRangeIndices) => emit('dateSelected', dateRange);
 
 </script>

@@ -10,12 +10,10 @@
         :text="thumb2Date" />
     </div>
     <div class="buttons flex items-center whitespace-nowrap">
-      <div class="mx-1 px-2 bg-blue-400 rounded-full cursor-pointer hover:bg-gray-700" @click="setMonths(3)">3M
-      </div>
-      <div class="mx-1 px-2 bg-blue-400 rounded-full cursor-pointer hover:bg-gray-700" @click="setMonths(6)">6M</div>
-      <div class="mx-1 px-2 bg-blue-400 rounded-full cursor-pointer hover:bg-gray-700" @click="setMonths(12)">1Y</div>
-      <div class="mx-1 px-2 bg-blue-400 rounded-full cursor-pointer hover:bg-gray-700" @click="setMonths()">All Time
-      </div>
+      <DateSliderButton @click="setMonths(3)">3M</DateSliderButton>
+      <DateSliderButton @click="setMonths(6)">6M</DateSliderButton>
+      <DateSliderButton @click="setMonths(12)">1Y</DateSliderButton>
+      <DateSliderButton @click="setMonths()">All Time</DateSliderButton>
     </div>
     <div class="pips text-gray-700 flex flex-col" ref="pips">
       <div class="h-3 flex justify-between w-full">
@@ -35,16 +33,19 @@
 
 <script setup lang="ts">
 import { getYearMonth } from '@/services/helper';
-import { DateRange } from '@/types';
-import { computed, nextTick, onMounted, PropType, ref, watch } from 'vue';
+import { DateRangeIndices } from '@/types';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import DateSliderThumb from './DateSliderThumb.vue';
+import DateSliderButton from './DateSliderButton.vue';
 
-const props = defineProps({
-  dates: { type: Array as PropType<string[]>, default: () => [] },
-  selectedStartIndex: { type: Number, required: true },
-  selectedEndIndex: { type: Number, required: true },
-  visible: { type: Boolean, default: () => false }
-})
+type Props = {
+  dates: string[]
+  selectedStartIndex: number
+  selectedEndIndex: number
+  visible?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), { dates: () => [], visible: false })
 
 const emit = defineEmits(['dateSelected'])
 
@@ -57,9 +58,9 @@ watch(() => props.visible, (newVisibility) =>
   newVisibility && nextTick(setWidth), { flush: 'post', })
 
 function dateSelected() {
-  const dateRange: DateRange = {
-    startDate: props.dates[startIndex.value],
-    endDate: props.dates[endIndex.value],
+  const dateRange: DateRangeIndices = {
+    startIndex: startIndex.value,
+    endIndex: endIndex.value,
   };
 
   emit('dateSelected', dateRange);

@@ -1,6 +1,6 @@
 import { useForecastApi } from '@/api/forecast';
 import { formatEndOfMonth, getUnixTime, isAfter } from '@/services/helper';
-import { Budget, DateRange, WorthDate } from '@/types';
+import { Budget, DateRange, DateRangeIndices, WorthDate } from '@/types';
 import { reactive, computed } from 'vue';
 import { BackendState } from './backend';
 import useComposition from './base';
@@ -95,25 +95,15 @@ export default class BaseBackend {
   private budget = computed(() => this.getBudgetById());
   public selectedBudgetId = computed(() => this.state.selectedBudgetId);
   public selectedBudgetName = computed(() => this.budget.value?.name);
-  public dateList = computed(() => this.budget.value?.dateList);
+  public dateList = computed(() => this.budget.value?.dateList ?? []);
   public netWorth = computed(() => this.budget.value?.monthlyNetWorth);
   public forecast = computed(() => this.budget.value?.forecast);
-  public selectedStartIndex = computed(() =>
-    this.dateList.value?.indexOf(this.selectedStartDate.value as string),
-  );
-  public selectedEndIndex = computed(() =>
-    this.dateList.value?.indexOf(this.selectedEndDate.value as string),
-  );
-  public selectedStartDate = computed(() => this.budget.value?.selectedStartDate);
-  public selectedEndDate = computed(() => this.budget.value?.selectedEndDate);
-  public selectedForecastStartDate = computed(() => this.budget.value?.selectedForecastStartDate);
-  public selectedForecastEndDate = computed(() => this.budget.value?.selectedForecastEndDate);
-  public selectedForecastStartIndex = computed(() =>
-    this.dateList.value?.indexOf(this.selectedForecastStartDate.value as string),
-  );
-  public selectedForecastEndIndex = computed(() =>
-    this.dateList.value?.indexOf(this.selectedForecastEndDate.value as string),
-  );
+  public selectedStartIndex = computed(() => this.budget.value?.selectedStartIndex ?? 0);
+  public selectedEndIndex = computed(() => this.budget.value?.selectedEndIndex);
+  public selectedStartDate = computed(() => this.dateList.value[this.selectedStartIndex.value]);
+  public selectedEndDate = computed(() => this.dateList.value[this.selectedEndIndex.value as number]);
+  public selectedForecastStartIndex = computed(() => this.budget.value?.selectedForecastStartIndex ?? 0);
+  public selectedForecastEndIndex = computed(() => this.budget.value?.selectedForecastEndIndex);
   public sortedBudgets = computed(() =>
     this.budgets.value?.sort((a, b) => {
       const aDate = new Date(a.lastModified ?? '');
@@ -159,17 +149,17 @@ export default class BaseBackend {
     setTimeout(() => this.setLoadingForecast(LoadingStatus.ready), 2000);
   }
 
-  public setBudgetDateRange(dateRange: DateRange) {
+  public setBudgetDateRange(dateRange: DateRangeIndices) {
     const budget = this.budget.value as Budget;
-    budget.selectedStartDate = dateRange.startDate;
-    budget.selectedEndDate = dateRange.endDate;
+    budget.selectedStartIndex = dateRange.startIndex;
+    budget.selectedEndIndex = dateRange.endIndex;
     this.setState();
   }
 
-  public setForecastDateRange(dateRange: DateRange) {
+  public setForecastDateRange(dateRange: DateRangeIndices) {
     const budget = this.budget.value as Budget;
-    budget.selectedForecastStartDate = dateRange.startDate;
-    budget.selectedForecastEndDate = dateRange.endDate;
+    budget.selectedForecastStartIndex = dateRange.startIndex;
+    budget.selectedForecastEndIndex = dateRange.endIndex;
   }
 
   public reset() {

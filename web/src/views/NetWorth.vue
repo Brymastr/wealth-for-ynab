@@ -21,6 +21,7 @@ import { computed } from 'vue';
 
 // Composables
 import useBackend from '@/composables/backend';
+import useNetWorth from '@/composables/netWorth';
 import { BackendType } from '@/composables/types';
 
 // Components
@@ -28,7 +29,6 @@ import Spinner from '@/components/General/Spinner.vue';
 import NetWorthUtilityBar from '@/components/NetWorth/UtilityBar.vue';
 import NetWorthMainSection from '@/components/NetWorth/MainSection.vue';
 import HeaderFix from '@/components/General/HeaderFix.vue'
-import useNetWorth from '@/composables/netWorth';
 
 const { activeBackend, setActiveBackend } = useBackend()
 

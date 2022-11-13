@@ -46,9 +46,13 @@ export class YnabBackend extends BaseBackend implements IBackend {
 
     const selectedStartDate = budget.selectedStartDate ?? formatEndOfMonth(defaultStartDate.toISOString());
     const selectedEndDate = budget.selectedEndDate ?? formatEndOfMonth(defaultEndDate.toISOString());
+    const selectedStartIndex = budget.selectedStartIndex ?? 0;
+    const selectedEndIndex = budget.selectedEndIndex ?? dateList.length - 1;
 
     const updatedBudget = Object.assign({}, budget, {
       monthlyNetWorth,
+      selectedStartIndex,
+      selectedEndIndex,
       selectedStartDate,
       selectedEndDate,
       dateList,

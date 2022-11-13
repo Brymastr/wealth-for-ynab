@@ -1,32 +1,25 @@
 import { BackendType, LoadingStatus } from './types';
 import useBackend from '@/composables/backend';
-import { createDateList, isBetween } from '@/services/helper';
+import { createDateList, greaterOf } from '@/services/helper';
 import { computed } from 'vue';
-import { DateRange } from '@/types';
+import { DateRangeIndices } from '@/types';
 
 const { activeBackend, activeBackendType } = useBackend();
 
 const forecast = activeBackend.value.forecast;
+const startIndex = activeBackend.value.selectedForecastStartIndex;
+const endIndex = activeBackend.value.selectedForecastEndIndex;
+const loadingStatus = activeBackend.value.loadingForecastStatus;
+const dateList = computed(() => createDateList(forecast.value ?? []));
 
 const forecastSlice = computed(() => {
   const data = forecast.value ?? [];
-  const start = startDate.value;
-  const end = endDate.value;
-  if (!start || !end) return [];
-  const filtered = data.filter(({ date }) => isBetween(new Date(date), new Date(start), new Date(end)));
-  return filtered;
+  return data.slice(startIndex.value, endIndex.value ?? greaterOf(data.length - 1, 0));
 });
 
 const reloadText = computed(() =>
   activeBackendType.value === BackendType.dummy ? 'Randomize Dummy Data' : 'Refresh',
 );
-
-const startDate = activeBackend.value.selectedForecastStartDate;
-const endDate = activeBackend.value.selectedForecastEndDate;
-const startIndex = activeBackend.value.selectedForecastStartIndex;
-const endIndex = activeBackend.value.selectedForecastEndIndex;
-
-const loadingStatus = activeBackend.value.loadingForecastStatus;
 
 const spinLoadingIcon = computed(
   () => activeBackend.value.loadingForecastStatus.value === LoadingStatus.loading,
@@ -36,11 +29,9 @@ function loadData() {
   activeBackend.value.loadForecast();
 }
 
-function setDateRange(dateRange: DateRange) {
+function setDateRange(dateRange: DateRangeIndices) {
   activeBackend.value.setForecastDateRange(dateRange);
 }
-
-const dateList = computed(() => createDateList(forecast.value ?? []));
 
 export default function useForecast() {
   return {
@@ -52,8 +43,6 @@ export default function useForecast() {
     reloadText,
     startIndex,
     endIndex,
-    startDate,
-    endDate,
     loadingStatus,
     spinLoadingIcon,
   };

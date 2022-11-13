@@ -4,64 +4,57 @@
     <HeaderFix />
 
     <!-- loading replacement for utility bar -->
-    <Spinner :on="!ready">Loading YNAB Data...</Spinner>
+    <Spinner v-if="!ready">Loading YNAB Data...</Spinner>
 
     <!-- utility bar -->
-    <div class="h-header bg-blue-400 text-white px-3 xl:px-0" v-if="ready">
-      <div class="xl:container mx-auto flex justify-between items-center">
-        <DateRangeComponent :dateList="dateList" :startIndex="(startIndex as number)" :endIndex="(endIndex as number)"
-          @dateSelected="dateSelected" />
-        <ReloadIcon class="pl-3 h-full items-center" id="reload-net-worth" :rotate="spinLoadingIcon" :ready="ready"
-          :action="loadForecast" size="small">{{ spinLoadingIcon || !ready ? 'Loading...' : reloadText }}</ReloadIcon>
-      </div>
-    </div>
+    <ForecastUtilityBar v-if="ready" :dateList="dateList" :startIndex="combinedStartIndex" :endIndex="combinedEndIndex"
+      @dateSelected="dateSelected" />
 
     <!-- main section -->
-    <section class="flex-grow" v-if="ready">
-      <ForecastGraph class="col-span-3 md:col-span-2 min-h-540 md:min-h-0 order-1 md:order-2" :netWorth="netWorthSlice"
-        :forecast="forecastSlice" v-on:dateHighlighted="dateHighlighted" />
-    </section>
+    <ForecastMainSection v-if="ready" :netWorth="netWorthSlice" :forecast="forecastSlice" />
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import DateRangeComponent from '@/components/General/DateRange.vue';
+import { computed, ref } from 'vue';
+
+// Components
 import Spinner from '@/components/General/Spinner.vue';
-import ForecastGraph from '@/components/Graphs/Forecast.vue';
-import ReloadIcon from '@/components/Icons/ReloadIcon.vue';
+import ForecastUtilityBar from '@/components/Forecast/UtilityBar.vue';
+import ForecastMainSection from '@/components/Forecast/MainSection.vue';
+import HeaderFix from '@/components/General/HeaderFix.vue';
+
 import useNetWorth from '@/composables/netWorth';
 import useForecast from '@/composables/forecast';
 import { createDateList } from '@/services/helper';
-import { DateRange } from '@/types';
-import HeaderFix from '@/components/General/HeaderFix.vue';
+import { DateRangeIndices, WorthDate } from '@/types';
 
-const { netWorthSlice, netWorth } = useNetWorth();
-const {
-  reloadText,
-  forecastSlice,
-  forecast,
-  loadData: loadForecast,
-  spinLoadingIcon,
-  startIndex,
-  endIndex,
-  setDateRange: setForecastDateRange,
-} = useForecast();
+const { netWorth } = useNetWorth();
+const { forecast, loadData: loadForecast } = useForecast();
 
 if (forecast?.value?.length === 0) loadForecast();
 
-const ready = computed(() => netWorth.value && netWorth.value.length > 0 && forecast.value && forecast?.value?.length > 0);
+const ready = computed(() => netWorth.value && netWorth.value.length > 0 && forecast.value && forecast.value?.length > 0);
+
+const forecastStartsAt = computed(() => (netWorth.value as WorthDate[]).length)
+
+const combinedStartIndex = ref(0)
+
+const combinedEndIndex = ref(forecastStartsAt.value - 1 + (forecast.value?.length ?? 0))
+
+const netWorthSlice = computed(() => netWorth.value?.slice(combinedStartIndex.value, combinedEndIndex.value) ?? [])
+
+const forecastSlice = computed(() => forecast.value?.slice(combinedStartIndex.value, combinedEndIndex.value) ?? [])
 
 const dateList = computed(() => {
   const combined = [...(netWorth.value ?? []), ...(forecast.value ?? [])];
   return createDateList(combined);
 });
 
-function dateSelected(payload: DateRange) {
-  setForecastDateRange(payload);
+function dateSelected({ startIndex, endIndex }: DateRangeIndices) {
+  combinedStartIndex.value = startIndex
+  combinedEndIndex.value = endIndex
 }
 
-function dateHighlighted() {
-  console.log('dateHighlighted');
-}
 </script>

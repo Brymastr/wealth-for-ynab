@@ -1,4 +1,4 @@
-import { Budget, DateRange, WorthDate } from '@/types';
+import { Budget, DateRangeIndices, WorthDate } from '@/types';
 import { computed, ComputedRef, reactive, readonly } from 'vue';
 import useComposition from './base';
 import { DummyBackend } from './DummyBackend';
@@ -30,16 +30,14 @@ export interface IBackend {
   forecast: ComputedRef<WorthDate[] | undefined>;
 
   // dates
-  selectedStartDate: ComputedRef<string | undefined>;
-  selectedEndDate: ComputedRef<string | undefined>;
   selectedStartIndex: ComputedRef<number | undefined>;
   selectedEndIndex: ComputedRef<number | undefined>;
-  selectedForecastStartDate: ComputedRef<string | undefined>;
-  selectedForecastEndDate: ComputedRef<string | undefined>;
+  selectedStartDate: ComputedRef<string | undefined>;
+  selectedEndDate: ComputedRef<string | undefined>;
   selectedForecastStartIndex: ComputedRef<number | undefined>;
   selectedForecastEndIndex: ComputedRef<number | undefined>;
-  setBudgetDateRange(dateRange: DateRange): void;
-  setForecastDateRange(dateRange: DateRange): void;
+  setBudgetDateRange(dateRange: DateRangeIndices): void;
+  setForecastDateRange(dateRange: DateRangeIndices): void;
 
   clearState(): void;
   reset(): void;

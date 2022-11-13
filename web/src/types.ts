@@ -10,6 +10,11 @@ export interface DateRange {
   endDate: string;
 }
 
+export interface DateRangeIndices {
+  startIndex: number;
+  endIndex: number;
+}
+
 export interface Budget {
   id: string;
   name: string;
@@ -18,6 +23,10 @@ export interface Budget {
   lastMonth: string;
   monthlyNetWorth?: WorthDate[];
   forecast?: WorthDate[];
+  selectedStartIndex?: number;
+  selectedEndIndex?: number;
+  selectedForecastStartIndex?: number;
+  selectedForecastEndIndex?: number;
   selectedStartDate?: string;
   selectedEndDate?: string;
   selectedForecastStartDate?: string;

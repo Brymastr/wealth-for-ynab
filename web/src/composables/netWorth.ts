@@ -1,8 +1,8 @@
 import { computed } from 'vue';
 import { BackendType, LoadingStatus } from './types';
 import useBackend from '@/composables/backend';
-import { isBetween } from '@/services/helper';
-import { DateRange } from '@/types';
+import { greaterOf, isBetween } from '@/services/helper';
+import { DateRangeIndices } from '@/types';
 
 const { activeBackend, activeBackendType } = useBackend();
 
@@ -16,12 +16,7 @@ const loadingStatus = activeBackend.value.loadingNetWorthStatus;
 
 const netWorthSlice = computed(() => {
   const data = netWorth.value ?? [];
-  const start = startDate.value;
-  const end = endDate.value;
-  if (!start || !end) return [];
-
-  const filtered = data.filter(({ date }) => isBetween(new Date(date), new Date(start), new Date(end)));
-  return filtered;
+  return data.slice(startIndex.value, endIndex.value ?? greaterOf(data.length - 1, 0));
 });
 
 const reloadText = computed(() =>
@@ -36,7 +31,7 @@ function loadData() {
   activeBackend.value.loadNetWorth();
 }
 
-function setDateRange(dateRange: DateRange) {
+function setDateRange(dateRange: DateRangeIndices) {
   activeBackend.value.setBudgetDateRange(dateRange);
 }
 

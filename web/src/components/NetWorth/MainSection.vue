@@ -24,22 +24,16 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import CurrentNetWorthSummary from '@/components/General/CurrentNetWorthSummary.vue';
 import NetWorthGraph from '@/components/Graphs/NetWorth.vue';
 import NetWorthStats from '@/components/Stats/NetWorth.vue';
 import NetWorthTable from '@/components/Tables/NetWorth.vue';
 import MonthlyAverage from '@/components/Graphs/MonthlyAverage.vue';
-import useBackend from '@/composables/backend';
-import { useRouter } from 'vue-router';
-import { PropType, ref, watch } from 'vue';
 import { WorthDate } from '@/types';
 
-const props = defineProps({
-  netWorth: {
-    type: Array as PropType<WorthDate[]>,
-    required: true
-  }
-})
+const props = defineProps<{ netWorth: WorthDate[] }>()
 
 const router = useRouter();
 const goToForecast = () => router.push({ name: 'Forecast' })

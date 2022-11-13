@@ -17,14 +17,8 @@ import { formatDate } from '@/services/helper';
 import { computed } from 'vue';
 import Underline from '@/components/General/Underline.vue';
 
-
 const props = defineProps<{ dateList: string[], startIndex: number, endIndex: number }>()
 
 const startDate = computed(() => formatDate(props.dateList[props.startIndex]))
 const endDate = computed(() => formatDate(props.dateList[props.endIndex]))
-
 </script>
-
-<style lang="postcss" scoped>
-
-</style>

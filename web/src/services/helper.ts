@@ -150,3 +150,7 @@ export function wait(ms = 1000) {
 export function getYearMonth(date: string) {
   return date.substring(0, 7);
 }
+
+export function greaterOf(a: number, b: number) {
+  return a >= b ? a : b;
+}
