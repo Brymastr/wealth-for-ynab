@@ -62,12 +62,12 @@ export default defineComponent({
     const graphData = computed(() => {
       const labels = props.netWorth.map(({ date }) => formatDate(date));
 
-      let actual = props.netWorth.map(({ worth }) => worth);
+      const data = props.netWorth.map(({ worth }) => worth);
 
       const datasets: ChartDataset[] = [
         {
           label: 'Monthly Net Worth',
-          data: actual,
+          data,
           fill: 'origin',
           backgroundColor: 'rgb(98, 179, 237, 0.5)',
           pointBackgroundColor: 'rgb(98, 179, 237)',
@@ -77,29 +77,6 @@ export default defineComponent({
           tension: 0.3,
         },
       ];
-
-      // if time range includes forecast
-      // if (props.forecast.length > 0) {
-      //   actual = props.netWorth.concat([props.forecast[0]]).map(({ worth }) => worth);
-
-      //   const forecast = props.netWorth
-      //     .map(({ date }) => ({ date, worth: NaN }))
-      //     .concat(props.forecast)
-      //     .map(({ worth }) => worth);
-
-      //   const forecastDataset: ChartDataset = {
-      //     label: 'Forecast',
-      //     data: forecast,
-      //     fill: 'zero',
-      //     spanGaps: false,
-      //     pointBackgroundColor: '#2D3848',
-      //     pointRadius: 2,
-      //     pointHoverRadius: 5,
-      //     pointBorderWidth: 0,
-      //   };
-
-      //   datasets.push(forecastDataset);
-      // }
 
       const chartData: ChartData = { labels, datasets };
 

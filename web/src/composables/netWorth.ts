@@ -1,7 +1,7 @@
 import { computed } from 'vue';
 import { BackendType, LoadingStatus } from './types';
 import useBackend from '@/composables/backend';
-import { greaterOf, isBetween } from '@/services/helper';
+import { greaterOf } from '@/services/helper';
 import { DateRangeIndices } from '@/types';
 
 const { activeBackend, activeBackendType } = useBackend();
@@ -16,7 +16,8 @@ const loadingStatus = activeBackend.value.loadingNetWorthStatus;
 
 const netWorthSlice = computed(() => {
   const data = netWorth.value ?? [];
-  return data.slice(startIndex.value, endIndex.value ?? greaterOf(data.length - 1, 0));
+
+  return data.slice(startIndex.value, (endIndex.value as number) + 1 ?? greaterOf(data.length - 1, 0));
 });
 
 const reloadText = computed(() =>
