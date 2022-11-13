@@ -2,7 +2,7 @@
   <div class="slider-grid mt-3">
     <div class="slider w-full flex flex-col justify-center relative" ref="slider">
       <div class="h-2 bg-gray-500"></div>
-      <div class="absolute bg-blue-400 h-2" :style="{left: `${thumb1Position}px`, width: `${middleWidth}px`}">
+      <div class="absolute bg-blue-400 h-2" :style="{ left: `${thumb1Position}px`, width: `${middleWidth}px` }">
       </div>
       <DateSliderThumb id="left-slider-item" ref="sliderItemLeft" side="left" :position="thumb1Position"
         :text="thumb1Date" />
@@ -18,13 +18,17 @@
     <div class="pips text-gray-700 flex flex-col" ref="pips">
       <div class="h-3 flex justify-between w-full">
         <div class="border-r-2 border-gray-500 h-1 transition-height" v-for="date, index in dates" :key="date"
-          :class="{'h-full': highlightPip(index)}"></div>
+          :class="{ 'h-full': highlightPip(index) }"></div>
       </div>
       <div class="h-full w-full relative">
         <div class="date-pips absolute flex justify-between"
-          :style="{width: `calc(${sliderWidth}px + 3rem)`, left: '-1.5rem'}">
-          <div class="h-full text-center whitespace-nowrap text-xs" v-for="date, index in dates" :key="date"
-            v-show="showPipDate(index)" :class="{'font-bold': highlightPip(index)}">{{getYearMonth(date)}}</div>
+          :style="{ width: `calc(${sliderWidth}px + 1.8rem)`, left: '-1.5rem' }">
+          <div class="h-full text-center whitespace-nowrap text-xs" v-for="date, index in dates" :key="date">
+            <div class="absolute" :class="{ 'font-bold': highlightPip(index), 'invisible': !showPipDate(index) }">{{
+                getYearMonth(date)
+            }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -140,7 +144,7 @@ function elementDrag(event: MouseEvent) {
 }
 
 function closeDragElement() {
-  // stop moving when mouse button is released:
+  // stop moving when mouse button is released
   document.onmouseup = null;
   document.onmousemove = null;
   selectedItem = null
@@ -190,11 +194,17 @@ function highlightPip(index: number) {
 
 function showPipDate(index: number) {
   const items = props.dates.length
-  const even = items % 2 === 0
+  const width = sliderWidth.value
   let show = false
   if (index === 0 || index === items - 1) show = true
-  show = (index) % 10 === 0
-
+  else {
+    if (width >= 500 && items >= 30) {
+      if (items % 6 <= 3 && index % 6 === 0) show = true
+      else if (items % 4 <= 2 && index % 4 === 0) show = true
+    } else {
+      show = index + 1 === Math.round(items / 2)
+    }
+  }
   return show
 }
 </script>
