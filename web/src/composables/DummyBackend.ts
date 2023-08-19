@@ -57,9 +57,13 @@ export class DummyBackend extends BaseBackend implements IBackend {
 
     const selectedStartDate = budget.selectedStartDate ?? formatEndOfMonth(defaultStartDate.toISOString());
     const selectedEndDate = budget.selectedEndDate ?? formatEndOfMonth(defaultEndDate.toISOString());
+    const selectedStartIndex = budget.selectedStartIndex ?? 0;
+    const selectedEndIndex = budget.selectedEndIndex ?? dateList.length - 1;
 
     const updatedBudget = Object.assign({}, budget, {
       monthlyNetWorth,
+      selectedStartIndex,
+      selectedEndIndex,
       selectedStartDate,
       selectedEndDate,
       dateList,
@@ -72,12 +76,3 @@ export class DummyBackend extends BaseBackend implements IBackend {
 }
 
 export const dummyBackend = new DummyBackend();
-
-// function reset() {
-//   const x = getModule<BackendState>(namespace);
-//   if (x?.budgets !== undefined) state.budgets = x.budgets;
-//   if (x?.selectedBudgetId !== undefined) state.selectedBudgetId = x.selectedBudgetId;
-//   if (x?.budgetsUpdatedAt !== undefined) state.budgetsUpdatedAt = x.budgetsUpdatedAt;
-//   if (x?.netWorthUpdatedAt !== undefined) state.netWorthUpdatedAt = x.netWorthUpdatedAt;
-//   if (x?.forecastUpdatedAt !== undefined) state.forecastUpdatedAt = x.forecastUpdatedAt;
-// }

@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import useSession from './session';
+import useBackend from './backend';
 import useSettings from './settings';
 
 export interface State {
@@ -12,15 +12,25 @@ const defaultState: State = {
 
 const state = reactive(defaultState);
 
-const {} = useSession();
-const { setBrynab, setDummy } = useSettings();
+const { setBrynab, setDummy, setDebug } = useSettings();
+const { clearNetWorthData, clearState: clearBackend } = useBackend();
+
+function helloTyped() {
+  console.log('hello');
+}
 
 function resetTyped() {
   console.log('reset typed');
 }
 
-function helloTyped() {
-  console.log('hello');
+function clearTyped() {
+  console.log('clearing net worth data');
+  clearNetWorthData();
+}
+
+function debugTyped() {
+  console.log('debug');
+  setDebug();
 }
 
 function brynabTyped() {
@@ -45,6 +55,10 @@ function updateKeylog(key: string) {
     brynabTyped();
   } else if (joined.slice(-5) === 'dummy') {
     dummyTyped();
+  } else if (joined.slice(-5) === 'clear') {
+    clearTyped();
+  } else if (joined.slice(-5) === 'debug') {
+    debugTyped();
   }
 }
 

@@ -1,17 +1,14 @@
 <template>
   <router-view />
+  <DebugComponent v-show="isDebug" />
 </template>
 
-<script lang="ts">
-import locales from './locales';
-locales();
-
+<script setup lang="ts">
 import useShortcuts from '@/composables/shortcuts';
-import { defineComponent } from 'vue';
+import DebugComponent from '@/components/General/Debug.vue'
+import useSettings from '@/composables/settings'
 
-export default defineComponent({
-  setup() {
-    useShortcuts();
-  },
-});
+useShortcuts();
+const { isDebug } = useSettings()
+
 </script>

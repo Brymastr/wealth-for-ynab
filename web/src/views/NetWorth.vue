@@ -12,7 +12,6 @@
 
     <!-- main section -->
     <NetWorthMainSection v-if="ready" :netWorth="netWorthSlice" />
-
   </div>
 </template>
 
@@ -32,17 +31,15 @@ import HeaderFix from '@/components/General/HeaderFix.vue'
 
 const { activeBackend, setActiveBackend } = useBackend()
 
-if (activeBackend.value.name === undefined) {
-  setActiveBackend(BackendType.ynab)
-}
+// if (activeBackend.value.name === undefined) {
+//   setActiveBackend(BackendType.ynab)
+// }
 
 const isBudgetSelected = activeBackend.value.isThereASelectedBudget
 
 const { netWorthSlice, dateList, startIndex, endIndex } = useNetWorth()
 
-const netWorthLength = computed(() => netWorthSlice.value.length)
-
-if (netWorthLength.value === 0 && isBudgetSelected.value) activeBackend.value.loadNetWorth()
+if (netWorthSlice.value.length === 0 && isBudgetSelected.value) activeBackend.value.loadNetWorth()
 
 const ready = computed(() => isBudgetSelected.value && netWorthSlice.value !== undefined && netWorthSlice.value.length > 0);
 </script>

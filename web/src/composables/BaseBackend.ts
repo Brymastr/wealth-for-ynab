@@ -1,6 +1,6 @@
 import { useForecastApi } from '@/api/forecast';
 import { formatEndOfMonth, getUnixTime, isAfter } from '@/services/helper';
-import { Budget, DateRange, DateRangeIndices, WorthDate } from '@/types';
+import { Budget, DateRangeIndices, WorthDate } from '@/types';
 import { reactive, computed } from 'vue';
 import { BackendState } from './backend';
 import useComposition from './base';
@@ -40,10 +40,17 @@ export default class BaseBackend {
       forecastUpdatedAt,
     });
   }
+
   public clearState() {
     this.state.selectedBudgetId = null;
     this.state.budgets.length = 0;
     this.setBudgetsUpdatedAt(null);
+    this.setState();
+  }
+
+  public clearNetWorthData() {
+    const budget = this.budget.value as Budget;
+    budget.monthlyNetWorth = [];
     this.setState();
   }
 

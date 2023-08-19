@@ -2,6 +2,7 @@ import { Budget, DateRangeIndices, WorthDate } from '@/types';
 import { computed, ComputedRef, reactive, readonly } from 'vue';
 import useComposition from './base';
 import { DummyBackend } from './DummyBackend';
+import { noneBackend } from './NoneBackend';
 import { BackendType, LoadingStatus } from './types';
 import { YnabBackend } from './YnabBackend';
 const namespace = 'backend';
@@ -40,6 +41,7 @@ export interface IBackend {
   setForecastDateRange(dateRange: DateRangeIndices): void;
 
   clearState(): void;
+  clearNetWorthData(): void;
   reset(): void;
 }
 
@@ -72,7 +74,7 @@ const { persist, getModule } = useComposition();
 const backends: Record<BackendType, IBackend | null> = {
   ynab: null,
   dummy: null,
-  none: null,
+  none: noneBackend,
 };
 
 const activeBackendType = computed(() => state.active);
@@ -124,6 +126,10 @@ function clearState() {
   set();
 }
 
+function clearNetWorthData() {
+  activeBackend.value;
+}
+
 function budgetSelected(budget: Budget) {
   activeBackend.value.setSelectedBudget(budget);
   if (activeBackend.value.netWorth.value?.length === 0) {
@@ -141,5 +147,6 @@ export default function useBackend() {
     reset,
     budgetSelected,
     clearState,
+    clearNetWorthData,
   };
 }

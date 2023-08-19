@@ -10,11 +10,13 @@ const { setActiveBackend, setActiveBackendToPrevious } = useBackend();
 interface State {
   brynab: boolean;
   dummy: boolean;
+  debug: boolean;
 }
 
 const defaultState: State = {
   brynab: false,
   dummy: false,
+  debug: false,
 };
 
 const state = reactive(defaultState);
@@ -40,12 +42,21 @@ function setDummy(payload?: boolean) {
   set();
 }
 
+const isDebug = computed(() => state.debug);
+
+function setDebug(payload?: boolean) {
+  const newState = payload ?? !state.debug;
+  state.debug = newState;
+  set();
+}
+
 function reset() {
   const x = getModule<State>(namespace);
   if (x?.brynab !== undefined) state.brynab = x?.brynab;
   if (x?.dummy !== undefined) state.dummy = x?.dummy;
+  if (x?.debug !== undefined) state.debug = x?.debug;
 }
 
 export default function useSettings() {
-  return { state: readonly(state), setBrynab, getBrynab, reset, isDummy, setDummy };
+  return { state: readonly(state), setBrynab, getBrynab, reset, isDummy, setDummy, isDebug, setDebug };
 }
