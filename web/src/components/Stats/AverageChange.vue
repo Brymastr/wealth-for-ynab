@@ -5,33 +5,19 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import Currency from '@/components/General/Currency.vue';
-import netWorth from '@/composables/netWorth';
-import { WorthDate } from '@/types';
-import { computed, defineComponent } from '@vue/runtime-core';
-import { PropType } from 'vue';
+import type { WorthDate } from '@/types'; import { computed } from 'vue';
 
-export default defineComponent({
-  props: {
-    netWorth: {
-      type: Array as PropType<WorthDate[]>,
-      default: () => [],
-    },
-  },
-  components: {
-    Currency,
-  },
-  setup(props: any) {
-    const value = computed(() => {
-      const first = props.netWorth[0]?.worth ?? 0;
-      const last = props.netWorth[props.netWorth.length - 1]?.worth ?? 0;
+const props = defineProps<{
+  netWorth: WorthDate[],
+}>()
 
-      const numMonths = props.netWorth.length;
-      return (last - first) / numMonths;
-    });
+const value = computed(() => {
+  const first = props.netWorth[0]?.worth ?? 0;
+  const last = props.netWorth[props.netWorth.length - 1]?.worth ?? 0;
 
-    return { value };
-  },
+  const numMonths = props.netWorth.length;
+  return (last - first) / numMonths;
 });
 </script>

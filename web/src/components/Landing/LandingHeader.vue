@@ -37,7 +37,7 @@
           </span>
         </div>
         <div class="-mr-5 col-span-3 md:col-span-2 cursor-pointer">
-          <LineGraph chartId="header-line-graph" :data="data" :options="options" />
+          <LineGraph chartId="header-line-graph" :data="props.data" :options="props.options" />
         </div>
       </div>
     </div>
@@ -45,8 +45,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from 'vue';
-import { ChartData, ChartOptions } from 'chart.js';
+import { computed } from 'vue';
+import type { ChartData, ChartOptions } from 'chart.js';
 import LineGraph from '@/components/Graphs/LineGraph.vue';
 import Logo from '@/components/General/Logo.vue';
 import BrynabLogo from '@/components/General/BrynabLogo.vue';
@@ -55,16 +55,10 @@ import LoginButton from '@/components/Landing/LoginButton.vue';
 import useSettings from '@/composables/settings';
 import { ynabReferral } from '@/api/constants';
 
-defineProps({
-  data: {
-    type: Object as PropType<ChartData>,
-    required: true,
-  },
-  options: {
-    type: Object as PropType<ChartOptions>,
-    required: true,
-  }
-})
+const props = defineProps<{
+  data: ChartData,
+  options: ChartOptions,
+}>()
 
 const { state: settings } = useSettings();
 const brynab = computed(() => settings.brynab);

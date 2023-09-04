@@ -1,6 +1,6 @@
 import { subMonths, addMonths } from 'date-fns';
 import { formatEndOfMonth } from '@/services/helper';
-import { WorthDate } from '@/types';
+import type { WorthDate } from '@/types';
 
 export class DummyDataApi {
   private randomNumber(minLength = 8, maxLength = 50) {

@@ -1,8 +1,6 @@
-module.exports = {
-  purge: {
-    enabled: process.env.NODE_ENV === 'production',
-    content: ['./public/**/*.html', , 'src/**/*.vue'],
-  },
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./public/**/*.html', , 'src/**/*.vue'],
   theme: {
     extend: {
       gridTemplateRows: {

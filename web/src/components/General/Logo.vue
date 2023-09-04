@@ -27,7 +27,7 @@ export default defineComponent({
   column-gap: 4px;
 }
 
-.logo > svg {
+.logo>svg {
   min-width: 104px;
 }
 </style>

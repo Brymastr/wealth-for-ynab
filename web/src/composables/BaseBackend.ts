@@ -1,8 +1,8 @@
 import { useForecastApi } from '@/api/forecast';
 import { formatEndOfMonth, getUnixTime, isAfter } from '@/services/helper';
-import { Budget, DateRangeIndices, WorthDate } from '@/types';
+import type { Budget, DateRangeIndices, WorthDate } from '@/types';
 import { reactive, computed } from 'vue';
-import { BackendState } from './backend';
+import type { BackendState } from './backend';
 import useComposition from './base';
 import { loadingReadyDelay } from './constants';
 import { BackendType, LoadingStatus } from './types';

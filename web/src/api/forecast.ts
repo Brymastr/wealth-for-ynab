@@ -1,4 +1,4 @@
-import { WorthDate } from '@/types';
+import type { WorthDate } from '@/types';
 import axios from 'axios';
 import { apiUrl } from './constants';
 

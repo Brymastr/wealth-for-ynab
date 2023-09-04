@@ -2,7 +2,7 @@ import { BackendType, LoadingStatus } from './types';
 import useBackend from '@/composables/backend';
 import { createDateList, greaterOf } from '@/services/helper';
 import { computed } from 'vue';
-import { DateRangeIndices } from '@/types';
+import type { DateRangeIndices } from '@/types';
 
 const { activeBackend, activeBackendType } = useBackend();
 

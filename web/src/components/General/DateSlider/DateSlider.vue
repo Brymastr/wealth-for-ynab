@@ -17,15 +17,15 @@
     </div>
     <div class="pips text-gray-700 flex flex-col" ref="pips">
       <div class="h-3 flex justify-between w-full">
-        <div class="border-r-2 border-gray-500 h-1 transition-height" v-for="date, index in dates" :key="date"
+        <div class="border-r-2 border-gray-500 h-1 transition-height" v-for="date, index in props.dates" :key="date"
           :class="{ 'h-full': highlightPip(index) }"></div>
       </div>
       <div class="h-full w-full relative">
         <div class="date-pips absolute flex justify-between"
           :style="{ width: `calc(${sliderWidth}px + 1.8rem)`, left: '-1.5rem' }">
-          <div class="h-full text-center whitespace-nowrap text-xs" v-for="date, index in dates" :key="date">
+          <div class="h-full text-center whitespace-nowrap text-xs" v-for="date, index in props.dates" :key="date">
             <div class="absolute" :class="{ 'font-bold': highlightPip(index), 'invisible': !showPipDate(index) }">{{
-                getYearMonth(date)
+              getYearMonth(date)
             }}
             </div>
           </div>
@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { getYearMonth } from '@/services/helper';
-import { DateRangeIndices } from '@/types';
+import type { DateRangeIndices } from '@/types';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import DateSliderThumb from './DateSliderThumb.vue';
 import DateSliderButton from './DateSliderButton.vue';

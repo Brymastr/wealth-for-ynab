@@ -10,7 +10,7 @@ import {
   format,
   getMonth,
 } from 'date-fns';
-import { WorthDate } from '@/types';
+import { type WorthDate } from '@/types';
 
 export function formatDate(date: string | Date) {
   return format(new Date(date), 'MMM yyyy');

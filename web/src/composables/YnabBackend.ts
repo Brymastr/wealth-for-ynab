@@ -1,7 +1,7 @@
 import { YnabDataApi, useYnabDataApi } from '@/api/YnabDataApi';
 import { createDateList, formatEndOfMonth } from '@/services/helper';
-import { Budget } from '@/types';
-import { IBackend } from './backend';
+import type { Budget } from '@/types';
+import type { IBackend } from './backend';
 import BaseBackend from './BaseBackend';
 import useSession from './session';
 import { BackendType, LoadingStatus } from './types';

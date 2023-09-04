@@ -9,16 +9,18 @@
             Forecast >
           </button>
         </div>
-        <NetWorthGraph class="col-span-3 md:col-span-2 min-h-540 md:min-h-0 order-1 md:order-2" :netWorth="netWorth"
+        <NetWorthGraph class="col-span-3 md:col-span-2 min-h-540 md:min-h-0 order-1 md:order-2" :netWorth="props.netWorth"
           v-on:dateHighlighted="dateHighlighted" />
       </div>
     </div>
 
     <!-- stats area -->
-    <div class="grid grid-cols-12 gap-5 xl:container mx-3 xl:mx-auto pt-5">
-      <NetWorthStats class="col-span-12 md:col-span-7" :netWorth="netWorth" />
-      <NetWorthTable class="col-span-12 md:col-span-5 row-span-2 max-h-500" :netWorth="netWorth" />
-      <MonthlyAverage class="col-span-12 md:col-span-7" :netWorth="netWorth" />
+    <div id="stats-area" class="xl:container xl:mx-auto pt-5">
+      <NetWorthStats class="net-worth-stats" :netWorth="props.netWorth" />
+      <MonthlyAverage class="monthly-average" :netWorth="props.netWorth" />
+      <NetWorthTable class="net-worth-table" :netWorth="props.netWorth" :selectedItem="selectedItem"
+        v-on:dateHighlighted="dateHighlighted" />
+      <InvestmentEquivalent class="investment-equivalent" :netWorth="props.netWorth" />
     </div>
   </section>
 </template>
@@ -31,8 +33,8 @@ import NetWorthGraph from '@/components/Graphs/NetWorth.vue';
 import NetWorthStats from '@/components/Stats/NetWorth.vue';
 import NetWorthTable from '@/components/Tables/NetWorth.vue';
 import MonthlyAverage from '@/components/Graphs/MonthlyAverage.vue';
-import { WorthDate } from '@/types';
-
+import InvestmentEquivalent from '@/components/Stats/InvestmentEquivalent.vue';
+import type { WorthDate } from '@/types';
 const props = defineProps<{ netWorth: WorthDate[] }>()
 
 const router = useRouter();
@@ -50,3 +52,33 @@ watch(
 );
 
 </script>
+
+<style>
+div#stats-area {
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 1.25rem;
+  grid-template-rows: 190px 400px;
+  grid-template-columns: 7fr 5fr;
+  grid-template-areas:
+    "net-worth-stats net-worth-table"
+    "monthly-average net-worth-table"
+    "investment-equivalent .";
+}
+
+div#stats-area>div.net-worth-stats {
+  grid-area: net-worth-stats;
+}
+
+div#stats-area>div.net-worth-table {
+  grid-area: net-worth-table;
+}
+
+div#stats-area>div.monthly-average {
+  grid-area: monthly-average;
+}
+
+div#stats-area>.investment-equivalent {
+  grid-area: investment-equivalent;
+}
+</style>

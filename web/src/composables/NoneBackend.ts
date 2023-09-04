@@ -1,6 +1,6 @@
-import { Budget, WorthDate, DateRangeIndices } from '@/types';
-import { ComputedRef } from 'vue';
-import { IBackend } from './backend';
+import type { Budget, WorthDate, DateRangeIndices } from '@/types';
+import type { ComputedRef } from 'vue';
+import type { IBackend } from './backend';
 import BaseBackend from './BaseBackend';
 import { BackendType, LoadingStatus } from './types';
 

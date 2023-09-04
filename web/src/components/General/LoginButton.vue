@@ -1,45 +1,32 @@
 <template>
-  <div
-    class="login-button-container rounded-full"
-    :class="[
+  <div class="login-button-container rounded-full" :class="[
+    {
+      'cursor-pointer': buttonState !== 'up',
+    },
+  ]" @mousedown="mouseDownEvent" @touchstart="mouseDownEvent" @touchend="mouseUpEvent" @mouseup="mouseUpEvent"
+    @mouseenter="mouseEnterEvent" @mouseleave="mouseLeaveEvent">
+    <div class="login-button-background rounded-full bg-gray-800 w-40 h-40" :class="[
+      {
+        ready: buttonState === 'ready',
+        hover: buttonState === 'hover',
+        down: buttonState === 'down',
+        up: buttonState === 'up' || loginStatus === 'loggedIn' || override === true,
+        'transition-none': loginStatus === 'loggedIn',
+      },
+    ]"></div>
+    <div class="login-button-text text-white text-2xl uppercase whitespace-nowrap" :class="[
       {
         'cursor-pointer': buttonState !== 'up',
+        'cursor-default': buttonState === 'up',
       },
-    ]"
-    @mousedown="mouseDownEvent"
-    @touchstart="mouseDownEvent"
-    @touchend="mouseUpEvent"
-    @mouseup="mouseUpEvent"
-    @mouseenter="mouseEnterEvent"
-    @mouseleave="mouseLeaveEvent"
-  >
-    <div
-      class="login-button-background rounded-full bg-gray-800 w-40 h-40"
-      :class="[
-        {
-          ready: buttonState === 'ready',
-          hover: buttonState === 'hover',
-          down: buttonState === 'down',
-          up: buttonState === 'up' || loginStatus === 'loggedIn' || override === true,
-          'transition-none': loginStatus === 'loggedIn',
-        },
-      ]"
-    ></div>
-    <div
-      class="login-button-text text-white text-2xl uppercase whitespace-nowrap"
-      :class="[
-        {
-          'cursor-pointer': buttonState !== 'up',
-          'cursor-default': buttonState === 'up',
-        },
-      ]"
-    >
+    ]">
       {{ message }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { apiUrl } from '@/api/constants';
 import { computed, defineComponent } from 'vue';
 import { ref } from 'vue';
 
@@ -61,7 +48,7 @@ export default defineComponent({
     const loginStatus = ref<LoginStatus>('loggedOut');
 
     function ynabLogin() {
-      const url = `${process.env.VUE_APP_API}/auth/ynab/login`;
+      const url = `${apiUrl}/auth/ynab/login`;
       loginStatus.value = 'pending';
       location.replace(url);
     }

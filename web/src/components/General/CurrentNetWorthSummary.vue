@@ -12,49 +12,31 @@
     <Currency class="justify-end text-2xl pr-2" :number="worth" :arrow="false" :full="true" />
 
     <div class="self-center pl-2 pb-2">Change:</div>
-    <Currency class="justify-end text-2xl pr-2 pb-2" v-if="difference" :number="difference" :arrow="true"
-      :full="true" />
+    <Currency class="justify-end text-2xl pr-2 pb-2" v-if="difference" :number="difference" :arrow="true" :full="true" />
     <Currency class="justify-end text-2xl pr-2 pb-2" v-else :number="0" :arrow="false" :full="false" />
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue';
 import { formatDate } from '@/services/helper';
 import Currency from '@/components/General/Currency.vue';
-import { computed, defineComponent, PropType } from 'vue';
-import forecast from '@/composables/forecast';
-import { WorthDate } from '@/types';
+import type { WorthDate } from '@/types';
 
-interface Props {
-  selectedItem: WorthDate;
-  forecast?: boolean;
-}
 
-export default defineComponent({
-  name: 'Current Net Worth Summary',
-  components: { Currency },
-  props: {
-    selectedItem: {
-      type: Object as PropType<WorthDate>,
-      required: true,
-    },
-    forecast: {
-      type: Boolean,
-      required: false,
-    },
-  },
-  setup(props: Props) {
-    const difference = computed(() => {
-      if (props.selectedItem.previous !== undefined) {
-        return props.selectedItem.worth - props.selectedItem.previous.worth;
-      } else return null;
-    });
+const props = defineProps<{
+  selectedItem: WorthDate,
+  forecast?: boolean,
+}>()
 
-    const date = computed(() => formatDate(props.selectedItem.date));
-
-    const worth = computed(() => props.selectedItem.worth);
-
-    return { difference, date, worth };
-  },
+const difference = computed(() => {
+  if (props.selectedItem.previous !== undefined) {
+    return props.selectedItem.worth - props.selectedItem.previous.worth;
+  } else return null;
 });
+
+const date = computed(() => formatDate(props.selectedItem.date));
+
+const worth = computed(() => props.selectedItem.worth);
+
 </script>

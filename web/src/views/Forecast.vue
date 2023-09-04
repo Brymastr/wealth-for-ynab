@@ -28,7 +28,7 @@ import HeaderFix from '@/components/General/HeaderFix.vue';
 import useNetWorth from '@/composables/netWorth';
 import useForecast from '@/composables/forecast';
 import { createDateList } from '@/services/helper';
-import { DateRangeIndices, WorthDate } from '@/types';
+import type { DateRangeIndices, WorthDate } from '@/types';
 
 const { netWorth } = useNetWorth();
 const { forecast, loadData: loadForecast } = useForecast();

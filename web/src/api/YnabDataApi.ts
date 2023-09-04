@@ -1,7 +1,7 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { BudgetDetail } from 'ynab';
+import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
+import type { BudgetDetail } from 'ynab';
 import { apiUrl } from './constants';
-import { Budget, WorthDate } from '@/types';
+import type { Budget, WorthDate } from '@/types';
 
 export class YnabDataApi {
   private client: AxiosInstance;

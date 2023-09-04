@@ -1,2 +1,2 @@
-export const apiUrl = process.env.VUE_APP_API;
-export const ynabReferral = process.env.VUE_APP_YNAB_REFERRAL;
+export const apiUrl = import.meta.env.VITE_APP_API;
+export const ynabReferral = import.meta.env.VITE_APP_YNAB_REFERRAL;

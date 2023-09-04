@@ -2,7 +2,7 @@
   <div class="text-white bg-gray-300">
     <div class="bg-blue-400 h-header px-3 xl:px-0">
       <div class="xl:container mx-auto flex justify-between items-center">
-        <DateRangeComponent :dateList="dateList" :startIndex="startIndex" :endIndex="endIndex"
+        <DateRangeComponent :dateList="props.dateList" :startIndex="startIndex" :endIndex="endIndex"
           @click="toggleSlider()" />
         <ReloadIcon class="pl-3 h-full items-center" id="reload-net-worth" :rotate="spinLoadingIcon" :ready="ready"
           :action="loadData" size="small">{{ spinLoadingIcon ? 'Loading...' : reloadText }}</ReloadIcon>
@@ -10,7 +10,7 @@
     </div>
 
     <div class="xl:container mx-auto px-3 xl:px-0" v-show="sliderVisible">
-      <DateSlider :dates="dateList" :selectedStartIndex="startIndex" :selectedEndIndex="endIndex"
+      <DateSlider :dates="props.dateList" :selectedStartIndex="startIndex" :selectedEndIndex="endIndex"
         @dateSelected="dateSelected" :visible="sliderVisible" />
     </div>
 
@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { DateRange, DateRangeIndices } from '@/types';
+import type { DateRangeIndices } from '@/types';
 import useBackend from '@/composables/backend';
 import { LoadingStatus } from '@/composables/types';
 import useNetWorth from '@/composables/netWorth';
@@ -27,7 +27,7 @@ import DateRangeComponent from '@/components/General/DateRange.vue';
 import DateSlider from '@/components/General/DateSlider/DateSlider.vue';
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue';
 
-defineProps<{
+const props = defineProps<{
   dateList: string[]
   startIndex: number
   endIndex: number

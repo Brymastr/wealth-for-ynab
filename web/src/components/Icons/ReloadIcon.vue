@@ -1,10 +1,10 @@
 <template>
-  <div class="icon-parent flex cursor-pointer items-center" @click="action">
+  <div class="icon-parent flex cursor-pointer items-center" @click="props.action">
     <p class="pr-1">
       <slot></slot>
     </p>
-    <svg :id="id" class="block transition-transform duration-200 ease-in-out h-full" :class="[
-      { rotate: rotateClass, ready },
+    <svg :id="props.id" class="block transition-transform duration-200 ease-in-out h-full" :class="[
+      { rotate: rotateClass, ready: props.ready },
       { 'w-8': size === 'small', 'w-16': size === 'large', 'w-auto': size === 'auto' },
     ]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="1"
       stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -15,44 +15,39 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, PropType, watch } from 'vue';
-import { ref } from 'vue';
+<script setup lang="ts">
+import { onMounted, ref, watch } from 'vue';
 
-export default defineComponent({
-  props: {
-    id: { type: String, required: true },
-    size: { type: String, default: 'auto' },
-    rotate: Boolean,
-    ready: Boolean,
-    action: { type: Function as PropType<(payload: MouseEvent) => void> },
+
+const props = defineProps<{
+  id: string,
+  size: string,
+  rotate: boolean,
+  ready?: boolean,
+  action?: (payload: MouseEvent) => void
+}>()
+
+const rotateClass = ref<boolean>(props.rotate);
+function listener() {
+  rotateClass.value = props.rotate;
+}
+
+watch(
+  () => props.rotate,
+  n => {
+    if (n) rotateClass.value = true;
   },
-  setup(props) {
-    const rotateClass = ref<boolean>(props.rotate);
-    function listener() {
-      rotateClass.value = props.rotate;
-    }
+);
 
-    watch(
-      () => props.rotate,
-      n => {
-        if (n) rotateClass.value = true;
-      },
-    );
-
-    onMounted(() => {
-      const element = document.getElementById(props.id);
-      element?.addEventListener('animationiteration', listener);
-    });
-
-    return {
-      rotateClass,
-    };
-  },
+onMounted(() => {
+  const element = document.getElementById(props.id);
+  element?.addEventListener('animationiteration', listener);
 });
+
+
 </script>
 
-<style  lang="postcss" scoped>
+<style lang="postcss" scoped>
 .icon-parent:hover .ready {
   transform: rotate(-90deg);
 }

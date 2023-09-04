@@ -9,32 +9,24 @@
   </div>
 </template>
 
-<script lang="ts">
-import netWorth from '@/composables/netWorth';
-import { WorthDate } from '@/types';
-import { computed, defineComponent } from '@vue/runtime-core';
-import { PropType } from 'vue';
+<script setup lang="ts">
+import type { WorthDate } from '@/types';
+import { computed } from 'vue';
 
-export default defineComponent({
-  props: {
-    netWorth: {
-      type: Array as PropType<WorthDate[]>,
-      default: () => [],
-    },
-  },
-  setup(props) {
-    const diffs = computed(() => {
-      if (props.netWorth.length === 0) return [0];
-      return props.netWorth.map(({ worth }, index, all) => {
-        if (index === 0) return 0;
-        return worth - all[index - 1].worth;
-      });
-    });
+const props = defineProps<{
+  netWorth: WorthDate[],
+}>()
 
-    const positives = computed(() => diffs.value.reduce((acc, cur) => (cur >= 0 ? acc + 1 : acc)));
-    const negatives = computed(() => diffs.value.reduce((acc, cur) => (cur < 0 ? acc + 1 : acc)));
-
-    return { positives, negatives };
-  },
+const diffs = computed(() => {
+  if (props.netWorth.length === 0) return [0];
+  return props.netWorth.map(({ worth }, index, all) => {
+    if (index === 0) return 0;
+    return worth - all[index - 1].worth;
+  });
 });
+
+const positives = computed(() => diffs.value.reduce((acc, cur) => (cur >= 0 ? acc + 1 : acc)));
+const negatives = computed(() => diffs.value.reduce((acc, cur) => (cur < 0 ? acc + 1 : acc)));
+
+
 </script>

@@ -1,5 +1,5 @@
-import { Budget, DateRangeIndices, WorthDate } from '@/types';
-import { computed, ComputedRef, reactive, readonly } from 'vue';
+import type { Budget, DateRangeIndices, WorthDate } from '@/types';
+import { computed, type ComputedRef, reactive, readonly } from 'vue';
 import useComposition from './base';
 import { DummyBackend } from './DummyBackend';
 import { noneBackend } from './NoneBackend';

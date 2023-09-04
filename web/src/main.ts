@@ -1,8 +1,7 @@
+import './assets/styles/index.css';
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import './registerServiceWorker';
-import './assets/styles/index.css';
 import locales from './locales';
 
 import useBase from '@/composables/base';
@@ -20,4 +19,6 @@ resetSession();
 resetSettings();
 resetBackend();
 
-createApp(App).use(router).mount('#app');
+const app = createApp(App)
+app.use(router)
+app.mount('#app')

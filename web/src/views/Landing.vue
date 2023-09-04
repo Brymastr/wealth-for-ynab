@@ -2,7 +2,7 @@
   <!-- page -->
   <main class="flex flex-col text-blue-400 min-h-screen">
     <!-- header -->
-    <Header :data="chartData" :options="options" />
+    <LandingHeader :data="chartData" :options="options" />
 
     <!-- content -->
     <section class="text-gray-800 mb-20">
@@ -88,7 +88,7 @@ import BestWorst from '@/components/Stats/BestWorst.vue';
 import NetChange from '@/components/Stats/NetChange.vue';
 import PositiveNegative from '@/components/Stats/PositiveNegative.vue';
 import { getOptions, getChartData } from '@/composables/dummyGraph';
-import Header from '@/components/Landing/Header.vue';
+import LandingHeader from '@/components/Landing/LandingHeader.vue';
 import WorksWithYnabSvg from '@/assets/works_with_ynab.vue';
 import { useDummyDataApi } from '@/api/DummyDataApi';
 
@@ -98,7 +98,7 @@ export default defineComponent({
     AverageChange,
     NetChange,
     PositiveNegative,
-    Header,
+    LandingHeader,
     WorksWithYnabSvg,
   },
   setup() {
@@ -120,7 +120,7 @@ export default defineComponent({
 
     const chartData = ref(getData());
 
-    const interval = ref(0);
+    const interval = ref();
 
     const options = ref(getOptions(rebuild));
 

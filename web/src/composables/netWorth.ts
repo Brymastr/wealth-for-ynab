@@ -2,7 +2,7 @@ import { computed } from 'vue';
 import { BackendType, LoadingStatus } from './types';
 import useBackend from '@/composables/backend';
 import { greaterOf } from '@/services/helper';
-import { DateRangeIndices } from '@/types';
+import type { DateRangeIndices } from '@/types';
 
 
 export default function useNetWorth() {

@@ -2,8 +2,7 @@
   <div class="text-white bg-gray-300">
     <div class="bg-blue-400 h-header px-3 xl:px-0">
       <div class="xl:container mx-auto flex justify-between items-center">
-        <DateRangeComponent :dateList="dateList" :startIndex="startIndex" :endIndex="endIndex"
-          @click="toggleSlider()" />
+        <DateRangeComponent :dateList="dateList" :startIndex="startIndex" :endIndex="endIndex" @click="toggleSlider()" />
         <ReloadIcon class="pl-3 h-full items-center" id="reload-net-worth" :rotate="spinLoadingIcon" :ready="ready"
           :action="loadData" size="small">{{ spinLoadingIcon ? 'Loading...' : reloadText }}</ReloadIcon>
       </div>
@@ -19,7 +18,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { DateRangeIndices } from '@/types';
+import type { DateRangeIndices } from '@/types';
 import useBackend from '@/composables/backend';
 import { LoadingStatus } from '@/composables/types';
 import DateRangeComponent from '@/components/General/DateRange.vue';

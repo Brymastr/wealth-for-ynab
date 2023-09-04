@@ -7,7 +7,6 @@
 
 <script setup lang="ts">
 import ForecastGraph from '@/components/Graphs/Forecast.vue';
-import { WorthDate } from '@/types';
-
+import type { WorthDate } from '@/types';
 defineProps<{ forecast: WorthDate[], netWorth: WorthDate[] }>()
 </script>

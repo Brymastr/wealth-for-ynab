@@ -9,35 +9,25 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import Currency from '@/components/General/Currency.vue';
-import netWorth from '@/composables/netWorth';
-import { WorthDate } from '@/types';
-import { defineComponent, PropType } from '@vue/runtime-core';
+import type { WorthDate } from '@/types';
 import { computed } from 'vue';
 
-export default defineComponent({
-  components: { Currency },
-  props: {
-    netWorth: {
-      type: Array as PropType<WorthDate[]>,
-      default: () => [],
-    },
-  },
-  setup(props) {
-    const diffs = computed(() => {
-      const amounts = props.netWorth.map(({ worth }) => worth);
-      if (amounts.length === 0) return [0];
-      return amounts.map((amount, index) => {
-        if (index === 0) return 0;
-        else return amount - amounts[index - 1];
-      });
-    });
+const props = defineProps<{
+  netWorth: WorthDate[],
+}>()
 
-    const best = computed(() => Math.max(...diffs.value));
-    const worst = computed(() => Math.min(...diffs.value));
-
-    return { best, worst };
-  },
+const diffs = computed(() => {
+  const amounts = props.netWorth.map(({ worth }) => worth);
+  if (amounts.length === 0) return [0];
+  return amounts.map((amount, index) => {
+    if (index === 0) return 0;
+    else return amount - amounts[index - 1];
+  });
 });
+
+const best = computed(() => Math.max(...diffs.value));
+const worst = computed(() => Math.min(...diffs.value));
+
 </script>

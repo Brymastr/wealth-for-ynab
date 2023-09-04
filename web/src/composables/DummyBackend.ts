@@ -1,7 +1,7 @@
 import { useDummyDataApi, DummyDataApi } from '@/api/DummyDataApi';
 import { createDateList, formatEndOfMonth, wait } from '@/services/helper';
-import { Budget } from '@/types';
-import { IBackend } from './backend';
+import type { Budget } from '@/types';
+import type { IBackend } from './backend';
 import BaseBackend from './BaseBackend';
 import { BackendType, LoadingStatus } from './types';
 
