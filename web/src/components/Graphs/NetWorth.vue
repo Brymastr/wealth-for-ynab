@@ -73,6 +73,7 @@ const graphData = computed(() => {
 });
 
 const graphOptions = computed(() => {
+
   const options: ChartOptions = {
     layout: {
       padding: {
@@ -100,12 +101,9 @@ const graphOptions = computed(() => {
         beginAtZero: false,
         ticks: {
           callback: tickCallback,
-          // mirror: true,
-          // labelOffset: -10,
-          padding: -4,
-        },
-        grid: {
-          // drawBorder: false,
+          mirror: true,
+          labelOffset: -10,
+          padding: -5,
         },
       },
       x: {

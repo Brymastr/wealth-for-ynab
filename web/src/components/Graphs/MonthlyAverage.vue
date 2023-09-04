@@ -73,13 +73,10 @@ const options = computed(() => {
         beginAtZero: false,
         ticks: {
           display: true,
-          // mirror: true,
+          mirror: true,
           callback: tickCallback,
-          // labelOffset: -10,
+          labelOffset: -10,
           padding: -4,
-        },
-        grid: {
-          // drawBorder: false,
         },
       },
       x: {

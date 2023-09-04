@@ -115,12 +115,9 @@ const graphOptions = computed(() => {
         beginAtZero: false,
         ticks: {
           callback: tickCallback,
-          // mirror: true,
-          // labelOffset: -10,
+          mirror: true,
+          labelOffset: -10,
           padding: -4,
-        },
-        grid: {
-          // drawBorder: false,
         },
       },
       x: {
