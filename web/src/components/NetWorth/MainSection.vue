@@ -21,6 +21,7 @@
       <NetWorthTable class="net-worth-table" :netWorth="props.netWorth" :selectedItem="selectedItem"
         v-on:dateHighlighted="dateHighlighted" />
       <InvestmentEquivalent class="investment-equivalent" :netWorth="props.netWorth" />
+      <TT100K class="tt100k" :netWorth="props.netWorth" />
     </div>
   </section>
 </template>
@@ -34,6 +35,7 @@ import NetWorthStats from '@/components/Stats/NetWorth.vue';
 import NetWorthTable from '@/components/Tables/NetWorth.vue';
 import MonthlyAverage from '@/components/Graphs/MonthlyAverage.vue';
 import InvestmentEquivalent from '@/components/Stats/InvestmentEquivalent.vue';
+import TT100K from '@/components/Stats/TT100K.vue';
 import type { WorthDate } from '@/types';
 const props = defineProps<{ netWorth: WorthDate[] }>()
 
@@ -63,7 +65,7 @@ div#stats-area {
   grid-template-areas:
     "net-worth-stats net-worth-table"
     "monthly-average net-worth-table"
-    "investment-equivalent .";
+    "investment-equivalent tt100k";
 }
 
 div#stats-area>div.net-worth-stats {
@@ -80,5 +82,9 @@ div#stats-area>div.monthly-average {
 
 div#stats-area>.investment-equivalent {
   grid-area: investment-equivalent;
+}
+
+div#stats-area>.tt100k {
+  grid-area: tt100k;
 }
 </style>
