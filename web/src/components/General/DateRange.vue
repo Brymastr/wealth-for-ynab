@@ -3,13 +3,12 @@
     <Underline>
       <div class="flex items-center select-none">
         <div class="mr-2 hidden sm:block">Date Range:</div>
-        <div>{{startDate}}</div>
-        <div class="mx-2 cursor-default">-</div>
-        <div>{{endDate}}</div>
+        <div>{{ startDate }}</div>
+        <div class="mx-2 cursor-default"> - </div>
+        <div>{{ endDate }}</div>
       </div>
     </Underline>
   </div>
-
 </template>
 
 <script setup lang="ts">

@@ -17,43 +17,32 @@
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent, onBeforeUnmount, onMounted, ref } from 'vue';
+<script lang="ts" setup>
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import useNav from '@/composables/nav';
 import DesktopNav from '@/components/Nav/Desktop.vue';
 import MobileNav from '@/components/Nav/Mobile.vue';
 import useBackend from '@/composables/backend';
 
-export default defineComponent({
-  name: 'Nav',
-  components: { DesktopNav, MobileNav },
-  setup() {
-    const { activeBackend } = useBackend();
-    const { firstUse, navVisibility } = useNav();
+const { activeBackend } = useBackend();
+const { firstUse, navVisibility } = useNav();
 
-    if (!activeBackend.value.isThereASelectedBudget.value) {
-      firstUse();
-    }
+if (!activeBackend.value.isThereASelectedBudget.value) {
+  firstUse();
+}
 
-    const width = ref<number>(window.innerWidth);
+const width = ref<number>(window.innerWidth);
 
-    function onResize() {
-      width.value = window.innerWidth;
-    }
+function onResize() {
+  width.value = window.innerWidth;
+}
 
-    onMounted(() => {
-      window.addEventListener('resize', onResize);
-    });
+onMounted(() => {
+  window.addEventListener('resize', onResize);
+});
 
-    onBeforeUnmount(() => {
-      window.removeEventListener('resize', onResize);
-    });
-
-    return {
-      navVisibility,
-      width,
-    };
-  },
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize);
 });
 </script>
 

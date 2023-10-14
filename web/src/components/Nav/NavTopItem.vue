@@ -7,23 +7,17 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 import Underline from '@/components/General/Underline.vue';
 
-export default defineComponent({
-  name: 'Nav Top Item',
-  components: { Underline },
-  props: {
-    selected: {
-      type: Boolean,
-      default: false,
-    },
-    click: Function,
-    underline: {
-      type: Boolean,
-      default: true,
-    },
-  },
-});
+export interface Props {
+  selected?: boolean
+  underline?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  selected: false,
+  underline: true,
+})
+
 </script>

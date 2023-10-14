@@ -1,27 +1,26 @@
 <template>
   <div class="parent flex flex-col justify-center items-center cursor-pointer h-full">
     <slot></slot>
-    <div class="underline transition-all duration-200" :class="[{ selected }, `bg-${color}-${level}`]"></div>
+    <div class="underline transition-all duration-200" :class="[underlineColor, { selected }]"></div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { computed, defineProps, withDefaults } from 'vue';
 
-export default defineComponent({
-  name: 'Underline',
-  props: {
-    selected: Boolean,
-    color: {
-      type: String,
-      default: 'gray',
-    },
-    level: {
-      type: String,
-      default: '800',
-    },
-  },
-});
+export interface Props {
+  selected?: boolean,
+  color?: string,
+  level?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  selected: false,
+  color: 'gray',
+  level: '800',
+})
+
+const underlineColor = computed(() => `bg-${props.color}-${props.level}`)
 </script>
 
 <style lang="postcss" scoped>
@@ -30,7 +29,7 @@ export default defineComponent({
   height: 2px;
 }
 
-.parent:hover > .underline,
+.parent:hover>.underline,
 .selected {
   width: 100%;
 }
