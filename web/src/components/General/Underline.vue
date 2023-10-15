@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps, withDefaults } from 'vue';
+import { computed, withDefaults } from 'vue';
 
 export interface Props {
   selected?: boolean,
@@ -23,7 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
 const underlineColor = computed(() => `bg-${props.color}-${props.level}`)
 </script>
 
-<style lang="postcss" scoped>
+<style scoped>
 .underline {
   width: 0;
   height: 2px;

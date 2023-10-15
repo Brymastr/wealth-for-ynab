@@ -12,7 +12,7 @@
           <!-- full signup / login -->
           <div class="hidden sm:block text-xl">
             <a class="inline-block mt-0" :href="ynabReferral">
-              <Underline color="green">Sign up for YNAB</Underline>
+              <Underline color="green" level="400">Sign up for YNAB</Underline>
             </a>
             <LoginButton />
           </div>
