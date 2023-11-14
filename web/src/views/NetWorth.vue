@@ -1,5 +1,5 @@
 <template>
-  <div class="font-thin" v-if="isBudgetSelected">
+  <div class="font-light" v-if="isBudgetSelected">
     <!-- header fix -->
     <HeaderFix />
 

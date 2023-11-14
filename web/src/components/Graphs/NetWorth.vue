@@ -1,9 +1,11 @@
 <template>
-  <LineGraph chart-id="monthly-net-worth-graph" class="line-graph cursor-pointer" :data="graphData"
-    :options="graphOptions" />
+  <Card>
+    <LineGraph chart-id="monthly-net-worth-graph" class="cursor-pointer" :data="graphData" :options="graphOptions" />
+  </Card>
 </template>
 
 <script setup lang="ts">
+import Card from '@/components/General/Card.vue'
 import LineGraph from '@/components/Graphs/LineGraph.vue';
 import { formatCurrency, formatDate } from '../../services/helper';
 import type { ChartData, ChartOptions, ChartDataset, ChartEvent, ActiveElement } from 'chart.js';
@@ -130,9 +132,3 @@ const graphOptions = computed(() => {
 
 
 </script>
-
-<style scoped>
-.line-graph {
-  clip-path: inset(8px 0);
-}
-</style>

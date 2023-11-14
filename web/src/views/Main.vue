@@ -1,7 +1,7 @@
 <template>
-  <div class="h-screen">
+  <div>
     <!-- main -->
-    <main class="h-full">
+    <main>
       <RouterView class="h-full flex flex-col"></RouterView>
     </main>
 
@@ -14,3 +14,9 @@
 import { RouterView } from 'vue-router'
 import Nav from '@/components/Nav/Nav.vue';
 </script>
+
+<style lang="postcss">
+html {
+  @apply bg-gray-300
+}
+</style>

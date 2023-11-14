@@ -1,13 +1,16 @@
 <template>
-  <div class="flex flex-col items-center whitespace-no-wrap" v-if="netWorth">
-    <div class="text-xl">Average Change</div>
-    <Currency class="text-3xl -mt-2" :number="value" />
-  </div>
+  <Card class="flex flex-col text-2xl">
+    <Icon class="text-5xl mb-4" />
+    <div class="text-2xl">Average Change</div>
+    <Currency class="text-5xl pb-5" :number="value" />
+  </Card>
 </template>
 
 <script setup lang="ts">
 import Currency from '@/components/General/Currency.vue';
 import type { WorthDate } from '@/types'; import { computed } from 'vue';
+import Card from '@/components/General/Card.vue'
+import Icon from '~icons/material-symbols/difference-outline-rounded'
 
 const props = defineProps<{
   netWorth: WorthDate[],

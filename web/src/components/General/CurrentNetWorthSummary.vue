@@ -1,20 +1,33 @@
 <template>
-  <div class="grid grid-cols-2 text-xl gap-y-3 leading-none bg-gray-200 shadow-lg rounded-sm">
-    <div class="text-gray-200 bg-gray-800 p-2 rounded-tl-sm">Net Worth</div>
-    <div class="text-right text-blue-300 bg-gray-800 p-2 rounded-tr-sm">
-      <span :class="{ invisible: !forecast }">Forecast</span>
+  <Card class="flex flex-col text-2xl">
+    <p class="text-3xl pb-10 pt-5">Summary</p>
+    <!-- Date -->
+    <div class="flex justify-between pb-5">
+      <p class="self-center">Date:</p>
+      <p class="text-right text-4xl whitespace-no-wrap">{{ date }}</p>
     </div>
 
-    <div class="self-center pl-2">Date:</div>
-    <div class="text-right text-2xl whitespace-no-wrap pr-2">{{ date }}</div>
+    <!-- Current value -->
+    <div class="flex justify-between pb-5">
+      <p class="self-center">Current:</p>
+      <Currency class="justify-end text-4xl" :number="worth" :arrow="false" :full="true" />
+    </div>
 
-    <div class="self-center pl-2">Current:</div>
-    <Currency class="justify-end text-2xl pr-2" :number="worth" :arrow="false" :full="true" />
+    <!-- Change in value -->
+    <div class="flex justify-between pb-5">
+      <p class="self-center">Change:</p>
+      <Currency class="justify-end text-4xl" v-if="difference" :number="difference" :arrow="true" :full="true" />
+      <Currency class="justify-end text-4xl" v-else :number="0" :arrow="false" :full="false" />
+    </div>
 
-    <div class="self-center pl-2 pb-2">Change:</div>
-    <Currency class="justify-end text-2xl pr-2 pb-2" v-if="difference" :number="difference" :arrow="true" :full="true" />
-    <Currency class="justify-end text-2xl pr-2 pb-2" v-else :number="0" :arrow="false" :full="false" />
-  </div>
+    <!-- Deviation from average change -->
+    <div class="flex justify-between">
+      <p class="self-center">Deviation from average:</p>
+      <Currency class="justify-end text-4xl" v-if="difference" :number="deviationFromAverageChange" :arrow="true"
+        :full="true" />
+      <Currency class="justify-end text-4xl" v-else :number="0" :arrow="false" :full="false" />
+    </div>
+  </Card>
 </template>
 
 <script setup lang="ts">
@@ -22,11 +35,13 @@ import { computed } from 'vue';
 import { formatDate } from '@/services/helper';
 import Currency from '@/components/General/Currency.vue';
 import type { WorthDate } from '@/types';
+import Card from '@/components/General/Card.vue'
 
 
 const props = defineProps<{
   selectedItem: WorthDate,
   forecast?: boolean,
+  netWorth: WorthDate[],
 }>()
 
 const difference = computed(() => {
@@ -38,5 +53,15 @@ const difference = computed(() => {
 const date = computed(() => formatDate(props.selectedItem.date));
 
 const worth = computed(() => props.selectedItem.worth);
+
+const averageChange = computed(() => {
+  const first = props.netWorth[0]?.worth ?? 0;
+  const last = props.netWorth[props.netWorth.length - 1]?.worth ?? 0;
+
+  const numMonths = props.netWorth.length;
+  return (last - first) / numMonths;
+});
+
+const deviationFromAverageChange = computed(() => (difference.value ?? 0) - averageChange.value)
 
 </script>

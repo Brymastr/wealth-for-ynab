@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       gridTemplateRows: {
-        '6': 'repeat(6, min-content)',
+        6: 'repeat(6, min-content)',
       },
       transitionProperty: {
         height: 'height',
@@ -15,6 +15,7 @@ export default {
         screen: '100vh',
         'screen-1/2': '50vh',
         'screen-1/4': '25vh',
+        'screen-2/5': '40vh',
         full: '100%',
         '1/2': '50%',
       },
@@ -22,10 +23,10 @@ export default {
         '1/4': '25%',
         '1/2': '50%',
         '3/4': '75%',
-        '200': '200px',
-        '300': '300px',
-        '400': '400px',
-        '540': '540px',
+        200: '200px',
+        300: '300px',
+        400: '400px',
+        540: '540px',
         header: '50px',
       },
       maxHeight: {
@@ -33,14 +34,14 @@ export default {
         '1/2': '50%',
         '3/4': '75%',
         full: '100%',
-        '400': '400px',
-        '500': '500px',
-        '600': '600px',
+        400: '400px',
+        500: '500px',
+        600: '600px',
         header: '50px',
         screen: '100vh',
       },
       maxWidth: {
-        '0': '0',
+        0: '0',
         '1/4': '25%',
         '1/2': '50%',
         '3/4': '75%',
