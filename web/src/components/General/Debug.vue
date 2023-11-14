@@ -19,15 +19,15 @@ import { LoadingStatus } from '@/composables/types';
 
 const { netWorth, netWorthSlice, startIndex, endIndex, startDate, endDate } = useNetWorth()
 const { activeBackendType, activeBackend } = useBackend()
-const isBudgetSelected = activeBackend.value.isThereASelectedBudget
+const isBudgetSelected = activeBackend.value?.isThereASelectedBudget ?? false
 
 const netWorthTotalLength = computed(() => netWorth.value?.length)
 const netWorthSliceLength = computed(() => netWorthSlice.value.length)
-const budgetName = computed(() => activeBackend.value.selectedBudgetName.value ?? 0)
+const budgetName = computed(() => activeBackend.value?.selectedBudgetName?.value ?? 0)
 
 const ready = computed(() => isBudgetSelected.value && netWorthSlice.value !== undefined && netWorthSlice.value.length > 0);
-const netWorthLoadingStatus = computed(() => LoadingStatus[activeBackend.value.loadingNetWorthStatus.value])
-const forecastLoadingStatus = computed(() => LoadingStatus[activeBackend.value.loadingForecastStatus.value])
+const netWorthLoadingStatus = computed(() => LoadingStatus[activeBackend.value?.loadingNetWorthStatus.value])
+// const forecastLoadingStatus = computed(() => LoadingStatus[activeBackend.value?.loadingForecastStatus.value])
 
 const info = [
   ['Active Backend', activeBackendType],
@@ -41,6 +41,6 @@ const info = [
   ['End Date', endDate],
   ['Ready', ready],
   ['NW Loading Status', netWorthLoadingStatus],
-  ['F Loading Status', forecastLoadingStatus],
+  // ['F Loading Status', forecastLoadingStatus],
 ]
 </script>

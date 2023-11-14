@@ -21,7 +21,7 @@
         <ReloadIcon class="text-3xl -mr-1" id="reload-budgets-small" :rotate="spinLoadingIcon" :ready="ready"
           :action="loadBudgets" size="large">{{ spinLoadingIcon || !ready ? 'Loading ' : '' }}</ReloadIcon>
 
-        <ArrowRightCircleIcon v-if="selectedBudgetId !== null" class="text-3xl -mr-1" label="" :action="go"
+        <ArrowRightCircleIcon v-if="selectedBudgetId.value !== null" class="text-3xl -mr-1" label="" :action="go"
           size="large" />
       </div>
       <!-- large -->
@@ -29,17 +29,17 @@
         <ReloadIcon class="text-3xl -mr-1" id="reload-budgets-large" :rotate="spinLoadingIcon" :ready="ready"
           :action="loadBudgets" size="large">{{ spinLoadingIcon || !ready ? 'Loading...' : 'Refresh' }}</ReloadIcon>
 
-        <ArrowRightCircleIcon v-if="selectedBudgetId !== null" class="text-3xl -mr-1" label="Go!" :action="go"
+        <ArrowRightCircleIcon v-if="selectedBudgetId.value !== null" class="text-3xl -mr-1" label="Go!" :action="go"
           size="large" />
       </div>
     </div>
 
     <!-- right side -->
     <div class="pt-3 sm:pt-0 sm:pl-3 sm:w-72">
-      <div class="cursor-pointer transition duration-100 ease-out hover:bg-gray-900 p-3" v-for="budget in sortedBudgets"
-        :key="budget.id" @click="budgetSelected(budget)">
+      <div class="cursor-pointer transition duration-100 ease-out hover:bg-gray-900 p-3"
+        v-for="budget in sortedBudgets.value" :key="budget.id" @click="budgetSelected(budget)">
         <span class="text-3xl leading-none">{{ budget.name }}</span>
-        <CircleCheckIcon class="pl-2 -mt-2 inline-block" v-if="budget.id === selectedBudgetId" />
+        <CircleCheckIcon class="pl-2 -mt-2 inline-block" v-if="budget.id === selectedBudgetId.value" />
         <p class="pl-5">Beginning: {{ formatDate(budget.firstMonth) }}</p>
         <p class="pl-5">Last updated: {{ dateDifFormat(budget.lastModified) }}</p>
       </div>
@@ -58,18 +58,16 @@ import { LoadingStatus } from '@/composables/types';
 
 const { activeBackend, budgetSelected } = useBackend()
 
-if (activeBackend.value.budgets.value.length === 0) activeBackend.value.loadBudgets();
-
 const spinLoadingIcon = computed(
-  () => activeBackend.value.loadingBudgetsStatus.value === LoadingStatus.loading,
+  () => activeBackend?.value?.loadingBudgetsStatus.value === LoadingStatus.loading,
 );
 const ready = computed(() => activeBackend.value.loadingBudgetsStatus.value === LoadingStatus.ready);
-const selectedBudgetId = activeBackend.value.selectedBudgetId;
+const selectedBudgetId = computed(() => activeBackend.value.selectedBudgetId);
 
 const emit = defineEmits(['done'])
 const go = () => emit('done')
 
 const loadBudgets = activeBackend.value.loadBudgets.bind(activeBackend.value)
-const sortedBudgets = activeBackend.value.sortedBudgets
+const sortedBudgets = computed(() => activeBackend.value.sortedBudgets)
 
 </script>

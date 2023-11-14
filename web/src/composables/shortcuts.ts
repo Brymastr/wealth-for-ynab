@@ -16,28 +16,31 @@ const { setBrynab, setDummy, setDebug } = useSettings();
 const { clearNetWorthData, clearState: clearBackend } = useBackend();
 
 function helloTyped() {
-  console.log('hello');
+  console.log('shortcut: hello');
 }
 
 function resetTyped() {
-  console.log('reset typed');
+  console.log('shortcut: reset');
 }
 
 function clearTyped() {
-  console.log('clearing net worth data');
+  console.log('shortcut: clearing net worth data');
   clearNetWorthData();
+  clearBackend();
 }
 
 function debugTyped() {
-  console.log('debug');
+  console.log('shortcut: debug');
   setDebug();
 }
 
 function brynabTyped() {
+  console.log('shortcut: brynab');
   setBrynab();
 }
 
 function dummyTyped() {
+  console.log('shortcut: dummy');
   setDummy();
 }
 

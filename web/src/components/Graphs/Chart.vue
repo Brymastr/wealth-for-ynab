@@ -57,15 +57,19 @@ onMounted(() => {
 watch(
   () => props.data,
   newData => {
-    chart.data = newData;
-    chart.update();
+    if (chart !== undefined) {
+      chart.data = newData;
+      chart.update();
+    }
   },
 );
 watch(
   () => props.options,
   newData => {
-    chart.options = newData;
-    chart.update();
+    if (chart !== undefined) {
+      chart.options = newData;
+      chart.update();
+    }
   },
 );
 </script>

@@ -20,7 +20,9 @@ const props = withDefaults(defineProps<Props>(), {
   level: '800',
 })
 
-const underlineColor = computed(() => `bg-${props.color}-${props.level}`)
+const underlineColor = computed(() => {
+  return `bg-${props.color}-${props.level}`
+})
 </script>
 
 <style scoped>

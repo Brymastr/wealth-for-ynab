@@ -9,10 +9,12 @@ class NoneBackend extends BaseBackend implements IBackend {
     super(BackendType.none);
   }
   loadBudgets(): Promise<void> {
-    throw new Error('Method not implemented.');
+    console.error('Method not implemented.')
+    return Promise.resolve()
   }
   loadNetWorth(): Promise<void> {
-    throw new Error('Method not implemented.');
+    console.error('Method not implemented.')
+    return Promise.resolve()
   }
 }
 

@@ -12,6 +12,5 @@ import useSettings from '@/composables/settings'
 
 useShortcuts();
 const { isDebug } = useSettings()
-console.log(import.meta.env)
 
 </script>

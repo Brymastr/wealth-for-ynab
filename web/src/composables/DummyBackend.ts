@@ -15,34 +15,37 @@ export class DummyBackend extends BaseBackend implements IBackend {
   public async loadBudgets(): Promise<void> {
     this.setLoadingBudgets();
 
+    await wait(2000);
+
     const budgets: Budget[] = [
       {
         id: '123',
         name: 'Dummy Budget #1',
         lastModified: new Date(Date.now() - 10000).toISOString(),
         firstMonth: '2018-01-01',
-        lastMonth: '2020-10-01',
+        lastMonth: '2023-10-01',
       },
       {
         id: '456',
         name: 'Dummy Budget #2',
-        lastModified: new Date(Date.now() - 10000).toISOString(),
+        lastModified: new Date(Date.now() - 10001).toISOString(),
         firstMonth: '2018-01-01',
-        lastMonth: '2020-10-01',
+        lastMonth: '2023-10-01',
       },
     ];
-
-    await wait(2000);
 
     this.createOrUpdateBudget(budgets[0]);
     this.createOrUpdateBudget(budgets[1]);
 
-    this.setBudgetsUpdatedAt();
+
     this.setLoadingBudgets(LoadingStatus.complete);
+    this.setBudgetsUpdatedAt();
   }
 
   public async loadNetWorth(): Promise<void> {
     this.setLoadingNetWorth();
+
+    await wait(2000);
 
     const budgetId = this.state.selectedBudgetId as string;
 
@@ -50,7 +53,9 @@ export class DummyBackend extends BaseBackend implements IBackend {
 
     const budget = this.getBudgetById(budgetId) as Budget;
     const dateList = createDateList(monthlyNetWorth);
-    const defaultStartDate = new Date(budget.firstMonth);
+    this.setBudgetDateRange({ startIndex: 0, endIndex: dateList.length - 1 })
+
+    const defaultStartDate = new Date(dateList[0]);
     const lastDayOfBudget = new Date(dateList[dateList.length - 1]);
     const today = new Date();
     const defaultEndDate = lastDayOfBudget.getTime() < today.getTime() ? lastDayOfBudget : today;

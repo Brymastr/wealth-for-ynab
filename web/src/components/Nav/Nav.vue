@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import useNav from '@/composables/nav';
 import DesktopNav from '@/components/Nav/Desktop.vue';
 import MobileNav from '@/components/Nav/Mobile.vue';
@@ -27,7 +27,11 @@ import useBackend from '@/composables/backend';
 const { activeBackend } = useBackend();
 const { firstUse, navVisibility } = useNav();
 
-if (!activeBackend.value.isThereASelectedBudget.value) {
+watch(() => activeBackend?.value.isThereASelectedBudget.value, (newValue) => {
+  if (newValue === false) firstUse()
+})
+
+if (!activeBackend?.value?.isThereASelectedBudget.value) {
   firstUse();
 }
 

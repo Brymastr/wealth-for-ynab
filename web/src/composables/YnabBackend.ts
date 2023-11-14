@@ -26,8 +26,6 @@ export class YnabBackend extends BaseBackend implements IBackend {
 
     this.setLoadingBudgets(LoadingStatus.complete);
     this.setBudgetsUpdatedAt();
-
-    setTimeout(() => this.setLoadingBudgets(LoadingStatus.ready), 2000);
   }
 
   public async loadNetWorth(): Promise<void> {

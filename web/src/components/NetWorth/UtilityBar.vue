@@ -9,10 +9,10 @@
       </div>
     </div>
 
-    <div class="xl:container mx-auto px-3 xl:px-0" v-show="sliderVisible">
+    <!-- <div class="xl:container mx-auto px-3 xl:px-0" v-show="sliderVisible">
       <DateSlider :dates="props.dateList" :selectedStartIndex="startIndex" :selectedEndIndex="endIndex"
         @dateSelected="dateSelected" :visible="sliderVisible" />
-    </div>
+    </div> -->
 
   </div>
 </template>

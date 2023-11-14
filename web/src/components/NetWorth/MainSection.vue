@@ -37,7 +37,9 @@ function dateHighlighted(item: WorthDate) {
 
 watch(
   () => props.netWorth,
-  () => dateHighlighted(selectedItem.value),
+  () => dateHighlighted(selectedItem.value)
 );
+
+
 
 </script>

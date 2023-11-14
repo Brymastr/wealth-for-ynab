@@ -4,16 +4,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import useBackend from '@/composables/backend';
-import { defineComponent } from 'vue';
+import { computed } from 'vue';
 
-export default defineComponent({
-  name: 'Nav Title',
-  setup() {
-    const { activeBackend } = useBackend();
-    const name = activeBackend.value.selectedBudgetName
-    return { name };
-  },
-});
+const { activeBackend } = useBackend();
+const name = computed(() => activeBackend.value.selectedBudgetName.value)
 </script>

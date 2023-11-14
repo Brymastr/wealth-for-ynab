@@ -1,5 +1,5 @@
 import type { Budget, DateRangeIndices, WorthDate } from '@/types';
-import { computed, type ComputedRef, reactive, readonly } from 'vue';
+import { computed, type ComputedRef, reactive, readonly, nextTick } from 'vue';
 import useComposition from './base';
 import { DummyBackend } from './DummyBackend';
 import { noneBackend } from './NoneBackend';
@@ -93,10 +93,16 @@ function setActiveBackend(backendType: BackendType) {
   }
 
   set();
+
+  nextTick(() => {
+    if (activeBackend?.value?.budgets.value.length === 0) {
+      activeBackend?.value?.loadBudgets()
+    }
+  })
 }
 
 function setActiveBackendToPrevious() {
-  const previous = state.previous;
+  const previous = state.previous ?? BackendType.ynab;
   state.previous = state.active;
   state.active = previous;
   set();
@@ -132,7 +138,7 @@ function clearNetWorthData() {
 
 function budgetSelected(budget: Budget) {
   activeBackend.value.setSelectedBudget(budget);
-  if (activeBackend.value.netWorth.value?.length === 0) {
+  if (activeBackend.value?.netWorth.value?.length === 0) {
     activeBackend.value.loadNetWorth();
   }
 }

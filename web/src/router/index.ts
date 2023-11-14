@@ -53,10 +53,12 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  console.log('before each')
   const { quickVerify } = useSession();
   const { activeBackendType, setActiveBackend } = useBackend();
 
   const validSession = quickVerify();
+  console.log(validSession)
 
   if (to.meta.requiresLogin && !validSession) {
     return next('/');

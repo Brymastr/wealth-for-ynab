@@ -38,6 +38,9 @@ export function daysInMonth(inputDate: Date | string) {
 }
 
 export function isBefore(date: Date, dateToCompare: Date) {
+  console.log('isBefore', date)
+  console.log('isBefore', dateToCompare)
+  console.log('isBefore', date < dateToCompare)
   return date < dateToCompare;
 }
 

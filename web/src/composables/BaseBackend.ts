@@ -92,7 +92,7 @@ export default class BaseBackend {
     this.setState();
   }
 
-  protected getBudgetById(budgetId?: string) {
+  protected getBudgetById(budgetId?: string): Budget | undefined {
     const id = budgetId ?? this.state.selectedBudgetId;
     return this.state.budgets.find(budget => budget.id === id);
   }
